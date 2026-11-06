@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Providers;
+
+use App\Models\User;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        require_once app_path('Helpers/helpers.php');
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        // Currency formatting Blade directive
+        Blade::directive('currency', function ($expression) {
+            return "<?php echo format_rupiah($expression); ?>";
+        });
+
+        // Server-side Authorization Gates
+        Gate::define('admin', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('cashier', function (User $user) {
+            return $user->isCashier();
+        });
+
+        Gate::define('manage-users', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('manage-master-data', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('manage-suppliers', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('view-reports', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('cancel-sale', function (User $user) {
+            return $user->isAdmin();
+        });
+
+        Gate::define('access-pos', function (User $user) {
+            return $user->is_active;
+        });
+
+        Gate::define('manage-inventory', function (User $user) {
+            return $user->is_active;
+        });
+
+        Gate::define('manage-customers', function (User $user) {
+            return $user->is_active;
+        });
+    }
+}
