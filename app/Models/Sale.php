@@ -62,6 +62,11 @@ class Sale extends Model
         return $this->hasMany(SaleItem::class);
     }
 
+    public function qrisTransaction(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(QrisTransaction::class);
+    }
+
     public function isCompleted(): bool
     {
         return $this->status === 'completed';

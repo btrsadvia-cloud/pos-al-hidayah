@@ -177,6 +177,25 @@ Jika terjadi kesalahan transaksi atau pembatalan belanja oleh konsumen:
 2. Admin dapat menambahkan akun kasir baru dengan mengklik **+ Tambah Pengguna Baru**.
 3. Jika seorang kasir sudah tidak bekerja lagi, klik tautan **Nonaktifkan** pada baris pengguna. Akun tersebut tidak akan dapat masuk kembali ke sistem, namun seluruh riwayat penjualan yang pernah dibuatnya tetap utuh dan tersimpan di basis data.
 
+### H. Konfigurasi & Penggunaan Gateway QRIS (BuatQris)
+1. **Pengaturan Kredensial (Admin):**
+   - Masuk sebagai Admin $\rightarrow$ buka menu **Pengaturan QRIS** di sidebar.
+   - Masukkan **Account ID** dan **Secret Token** (diawali `sk_live_`) yang diperoleh dari dasbor [BuatQris](https://app.buatqris.site/dasbort) (menu *Open API* $\rightarrow$ *Kredensial API*).
+   - Masukkan **Signing Secret** (dari kartu *Webhook / Callback* di dasbor BuatQris).
+   - Tentukan tanggungan fee: dipotong dari saldo toko (default) atau dibebankan ke pembeli.
+   - Klik **Simpan Konfigurasi**.
+2. **Menyambungkan Webhook (Opsional untuk domain publik/ngrok):**
+   - Salin URL Webhook yang ditampilkan di halaman Pengaturan QRIS (`http://domain-anda/api/buatqris/webhook`).
+   - Tempel ke kartu *Webhook / Callback* di dasbor BuatQris.
+3. **Melakukan Pembayaran QRIS di Kasir:**
+   - Di layar POS kasir, pilih produk dan pilih metode pembayaran **QRIS**.
+   - Klik tombol **BUAT KODE QRIS (F9)**.
+   - Pop-up modal QRIS dinamis akan muncul menampilkan QR Code, total tagihan persis (termasuk kode unik verifikasi), dan penghitung waktu kedaluwarsa.
+   - Tunjukkan QR code kepada pembeli untuk di-scan dengan e-wallet (GoPay, OVO, DANA, ShopeePay) atau mobile banking (BCA, Mandiri, BRI, BNI).
+   - Sistem akan memantau pembayaran. Begitu pembeli membayar, sistem otomatis mendeteksi pelunasan, menyelesaikan transaksi, dan langsung memunculkan struk belanja thermal.
+   - Kasir juga dapat menekan tombol **🔍 Cek Status Sekarang** untuk memeriksa status seketika ke gateway.
+
 ---
 
 *Hak Cipta &copy; 2026 Toko Al-Hidayah. Seluruh hak cipta dilindungi undang-undang.*
+

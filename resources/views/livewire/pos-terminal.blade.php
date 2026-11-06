@@ -390,12 +390,25 @@
                             <span class="text-base font-bold text-slate-900">{{ format_rupiah($change) }}</span>
                         </div>
                     </div>
+                @elseif($paymentMethod === 'qris')
+                    <!-- QRIS BuatQris Info Card -->
+                    <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl space-y-2">
+                        <div class="flex items-center space-x-2 text-teal-800 font-bold text-xs">
+                            <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                            <span>Gateway BuatQris Dinamis</span>
+                        </div>
+                        <p class="text-[11px] text-teal-700 leading-relaxed">
+                            QRIS akan dibuat secara otomatis dengan kode unik verifikasi. Sistem akan mendeteksi pelunasan secara real-time.
+                        </p>
+                    </div>
                 @else
-                    <!-- QRIS / Transfer Reference -->
+                    <!-- Transfer Reference -->
                     <div>
-                        <label class="block font-medium text-slate-700 mb-1">No. Referensi / Bukti Bayar</label>
+                        <label class="block font-medium text-slate-700 mb-1">No. Rekening / Bukti Transfer</label>
                         <input type="text" wire:model.live="paymentReference"
-                               placeholder="Contoh: RRN / No. Ref Transfer"
+                               placeholder="Contoh: No. Bukti Transfer Bank"
                                class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-teal-500">
                     </div>
                 @endif
@@ -415,14 +428,152 @@
                         wire:click="checkout"
                         :disabled="!isOnline || {{ count($cart) === 0 ? 'true' : 'false' }}"
                         class="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition flex items-center justify-center space-x-2 cursor-pointer min-h-[48px]">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span>BAYAR (F9)</span>
+                    @if($paymentMethod === 'qris')
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                        <span>BUAT KODE QRIS (F9)</span>
+                    @else
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span>BAYAR (F9)</span>
+                    @endif
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- DYNAMIC BUATQRIS PAYMENT MODAL -->
+    @if($showQrisModal)
+        <div wire:poll.5s="pollQrisStatus"
+             class="fixed inset-0 bg-slate-900/75 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto" x-cloak>
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative text-center my-8">
+                <!-- Header -->
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center space-x-2 text-left">
+                        <div class="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-900">QRIS Toko Al-Hidayah</h4>
+                            <p class="text-[11px] text-slate-400 font-mono">ID: {{ $qrisTransactionId }}</p>
+                        </div>
+                    </div>
+                    <button type="button" wire:click="cancelQrisPayment"
+                            class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Total Amount Banner (Must pay exact total_amount) -->
+                <div class="mt-4 p-3 bg-gradient-to-r from-teal-700 to-teal-800 text-white rounded-2xl shadow-sm">
+                    <span class="text-[11px] text-teal-200 block uppercase tracking-wider font-semibold">Total yang Harus Dibayar:</span>
+                    <span class="text-3xl font-black tracking-tight block my-0.5">
+                        {{ format_rupiah($qrisTotalAmount) }}
+                    </span>
+                    @if($qrisAmountUniq > 0)
+                        <span class="text-[11px] text-teal-100 block font-medium">
+                            (Termasuk kode unik <strong>Rp {{ $qrisAmountUniq }}</strong> untuk verifikasi instan)
+                        </span>
+                    @endif
+                </div>
+
+                <!-- QR Code Display -->
+                <div class="my-4">
+                    <div class="inline-block p-3 bg-white rounded-2xl border-2 border-teal-500 shadow-md">
+                        @if(!empty($qrisImage))
+                            <img src="{{ $qrisImage }}" alt="QRIS Code" class="w-60 h-60 mx-auto object-contain rounded-lg">
+                        @elseif(!empty($qrisQrUrl))
+                            <img src="{{ $qrisQrUrl }}" alt="QRIS Code" class="w-60 h-60 mx-auto object-contain rounded-lg">
+                        @else
+                            <div class="w-60 h-60 flex items-center justify-center text-slate-400 text-xs">
+                                Memuat QR Code...
+                            </div>
+                        @endif
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-2">
+                        Scan dengan <strong>BCA, BRI, Mandiri, BNI, GoPay, OVO, DANA, ShopeePay</strong>, dll
+                    </p>
+                </div>
+
+                <!-- Live Status Indicator -->
+                <div class="space-y-2 mb-5">
+                    @if($qrisStatus === 'success')
+                        <div class="py-2.5 px-3 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-xl text-xs font-bold flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Pembayaran Lunas! Menyimpan transaksi...</span>
+                        </div>
+                    @elseif($qrisStatus === 'expired')
+                        <div class="py-2 px-3 bg-red-50 border border-red-300 text-red-700 rounded-xl text-xs font-semibold">
+                            QRIS telah kedaluwarsa. Silakan batalkan dan buat baru.
+                        </div>
+                    @elseif($qrisStatus === 'failed')
+                        <div class="py-2 px-3 bg-red-50 border border-red-300 text-red-700 rounded-xl text-xs font-semibold">
+                            Pembayaran QRIS gagal atau dibatalkan.
+                        </div>
+                    @else
+                        <div class="py-2 px-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2 animate-pulse">
+                            <svg class="w-4 h-4 animate-spin text-amber-600" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span>Menunggu pembayaran pelanggan...</span>
+                        </div>
+                    @endif
+
+                    @if(!empty($qrisExpiredAt))
+                        <div class="text-[11px] text-slate-400">
+                            Berlaku s/d: <span class="font-semibold text-slate-600">{{ $qrisExpiredAt }}</span>
+                        </div>
+                    @endif
+
+                    @if(!empty($qrisStatusMessage))
+                        <p class="text-xs text-slate-600 font-medium px-2">
+                            {{ $qrisStatusMessage }}
+                        </p>
+                    @endif
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-2">
+                    <button type="button" wire:click="checkQrisStatus"
+                            wire:loading.attr="disabled"
+                            class="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-bold rounded-xl transition flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50">
+                        <span wire:loading.remove wire:target="checkQrisStatus">
+                            🔍 CEK STATUS SEKARANG
+                        </span>
+                        <span wire:loading wire:target="checkQrisStatus" class="flex items-center space-x-1.5">
+                            <svg class="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                            </svg>
+                            <span>Memeriksa gateway...</span>
+                        </span>
+                    </button>
+
+                    @if(config('buatqris.test_mode') || app()->environment('local'))
+                        <!-- Development Testing Button -->
+                        <button type="button" wire:click="simulateSuccessQris"
+                                class="w-full py-2 px-3 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl text-xs transition cursor-pointer border border-amber-300 flex items-center justify-center space-x-1">
+                            <span>⚡ Simulasi Bayar Lunas (Mode Testing)</span>
+                        </button>
+                    @endif
+
+                    <button type="button" wire:click="cancelQrisPayment"
+                            class="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition cursor-pointer">
+                        Batal / Ganti Metode Pembayaran
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- SUCCESS RECEIPT MODAL -->
     @if($showSuccessModal)
@@ -555,3 +706,4 @@
         </div>
     @endif
 </div>
+

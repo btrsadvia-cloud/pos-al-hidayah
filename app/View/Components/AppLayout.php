@@ -12,3 +12,4 @@ class AppLayout extends Component
         return view('layouts.app');
     }
 }
+

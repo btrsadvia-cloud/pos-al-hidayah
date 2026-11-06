@@ -228,6 +228,14 @@
                         </svg>
                         <span>Kelola Pengguna</span>
                     </a>
+
+                    <a href="{{ route('settings.buatqris') }}"
+                       class="flex items-center space-x-3 px-3 py-2 rounded-lg font-medium transition {{ request()->routeIs('settings.buatqris*') ? 'bg-teal-50 text-teal-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                        <span>Pengaturan QRIS</span>
+                    </a>
                 @endcan
             </nav>
         </aside>
@@ -265,6 +273,7 @@
                     <a href="{{ route('suppliers.index') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Pemasok</a>
                     <a href="{{ route('reports.index') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Laporan Penjualan</a>
                     <a href="{{ route('users.index') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Pengguna</a>
+                    <a href="{{ route('settings.buatqris') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Pengaturan QRIS</a>
                 @endcan
             </nav>
         </div>
@@ -356,3 +365,4 @@
     @livewireScripts
 </body>
 </html>
+

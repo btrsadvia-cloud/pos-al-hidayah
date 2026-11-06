@@ -65,6 +65,16 @@ Sistem Kasir (Point of Sale) & Manajemen Inventori Web berbasis **Laravel 13** y
 - Penonaktifan akun pengguna secara lunak (*soft deactivation*) tanpa menghapus riwayat transaksi.
 - Setiap aktivitas penting dicatat pada tabel `audit_logs`.
 
+### E. Integrasi Payment Gateway QRIS Dinamis (BuatQris)
+- Terhubung langsung dengan Open API **[BuatQris](https://app.buatqris.site)** (`https://api.buatqris.site`).
+- **QRIS Dinamis Otomatis:** Saat kasir memilih metode QRIS di POS, sistem memanggil backend untuk membuat invoice QRIS dengan kode unik nominal untuk verifikasi instan.
+- **Tampilan Modal QRIS Real-time:** Menampilkan QR Code (gambar PNG / base64), total nominal tepat yang wajib dibayar, batas kedaluwarsa, dan indikator status langsung di depan kasir/pembeli.
+- **Polling & Webhook Aman:**
+  - Dilengkapi endpoint webhook callback (`/api/buatqris/webhook`) dengan verifikasi tanda tangan HMAC-SHA256 (`X-BuatQris-Signature`) dan proteksi idempoten.
+  - Di lingkungan localhost, kasir tetap dapat memantau pembayaran via tombol **"Cek Status Sekarang"** dan polling otomatis yang aman dari batas rate limit (maks 1x per 20 detik).
+  - Saat pembayaran lunas, transaksi otomatis tersimpan dan nota struk langsung tercetak.
+- **Halaman Pengaturan BuatQris (Admin):** Menu **Pengaturan QRIS** untuk mengisi Account ID, Secret Token, Signing Secret, serta memantau log transaksi QRIS.
+
 ---
 
 ## 4. Cara Instalasi & Menjalankan di Localhost

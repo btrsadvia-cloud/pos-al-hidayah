@@ -4,7 +4,9 @@ namespace App\Livewire;
 
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\QrisTransaction;
 use App\Models\Sale;
+use App\Services\BuatQrisService;
 use App\Services\PosService;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
@@ -42,6 +44,23 @@ class PosTerminal extends Component
     public bool $showShortcutsModal = false;
     public string $errorMessage = '';
     public string $successMessage = '';
+
+    // BuatQris Gateway State
+    public bool $showQrisModal = false;
+    public ?string $qrisTransactionId = null;
+    public ?string $qrisQrUrl = null;
+    public ?string $qrisImage = null;
+    public ?string $qrisPaymentUrl = null;
+    public int $qrisAmount = 0;
+    public int $qrisTotalAmount = 0;
+    public int $qrisAmountUniq = 0;
+    public int $qrisAdminFee = 0;
+    public ?string $qrisExpiredAt = null;
+    public string $qrisStatus = 'pending'; // pending, success, expired, failed
+    public string $qrisStatusMessage = '';
+    public int $lastCheckTimestamp = 0;
+    public int $qrisCooldownSeconds = 0;
+    public bool $isCreatingQris = false;
 
     public function mount()
     {
@@ -309,6 +328,15 @@ class PosTerminal extends Component
             return;
         }
 
+        // If paying via QRIS and BuatQris is configured, initiate dynamic QRIS flow
+        if ($this->paymentMethod === 'qris') {
+            $qrisService = app(BuatQrisService::class);
+            if ($qrisService->isConfigured()) {
+                $this->initiateQrisPayment($qrisService);
+                return;
+            }
+        }
+
         $total = $this->calculateTotal();
         if ($this->paymentMethod === 'cash' && $this->paidAmount < $total) {
             $this->errorMessage = 'Uang tunai pembayaran kurang dari total belanja.';
@@ -368,6 +396,211 @@ class PosTerminal extends Component
         }
     }
 
+    /**
+     * Start BuatQris Dynamic Payment flow.
+     */
+    public function initiateQrisPayment(BuatQrisService $qrisService)
+    {
+        $this->clearError();
+        $total = $this->calculateTotal();
+
+        if ($total < 1000) {
+            $this->errorMessage = 'Nominal pembayaran QRIS minimal Rp 1.000.';
+            return;
+        }
+
+        $this->isCreatingQris = true;
+
+        $desc = 'Belanja Toko Al-Hidayah - ' . count($this->cart) . ' item';
+        $result = $qrisService->createQris($total, $desc, [
+            'user_id' => auth()->id(),
+        ]);
+
+        $this->isCreatingQris = false;
+
+        if (!$result['success']) {
+            $this->errorMessage = $result['message'] ?? 'Gagal membuat transaksi QRIS di gateway BuatQris.';
+            return;
+        }
+
+        /** @var QrisTransaction $trx */
+        $trx = $result['data'];
+
+        $this->qrisTransactionId = $trx->transaction_id;
+        $this->qrisQrUrl = $trx->qr_url;
+        $this->qrisImage = $trx->qris_image;
+        $this->qrisPaymentUrl = $trx->payment_url;
+        $this->qrisAmount = $trx->amount;
+        $this->qrisTotalAmount = $trx->total_amount;
+        $this->qrisAmountUniq = $trx->amount_uniq;
+        $this->qrisAdminFee = $trx->admin_fee;
+        $this->qrisExpiredAt = $trx->expired_at ? $trx->expired_at->format('H:i') : null;
+        $this->qrisStatus = 'pending';
+        $this->qrisStatusMessage = 'Scan kode QRIS di bawah ini dengan aplikasi e-wallet atau mobile banking.';
+        $this->lastCheckTimestamp = time();
+        $this->qrisCooldownSeconds = 0;
+        $this->showQrisModal = true;
+    }
+
+    /**
+     * Poll status periodically while QR modal is open.
+     */
+    public function pollQrisStatus(BuatQrisService $qrisService, PosService $posService)
+    {
+        if (!$this->showQrisModal || empty($this->qrisTransactionId) || $this->qrisStatus === 'success') {
+            return;
+        }
+
+        // 1. Check local DB first (in case webhook already delivered the success notification)
+        $dbTrx = QrisTransaction::where('transaction_id', $this->qrisTransactionId)->first();
+        if ($dbTrx && $dbTrx->isSuccess()) {
+            $this->qrisStatus = 'success';
+            $this->completeQrisCheckout($posService);
+            return;
+        }
+
+        // 2. Poll API only if at least 20 seconds have passed to strictly avoid HTTP 429
+        if ((time() - $this->lastCheckTimestamp) >= 20) {
+            $this->checkQrisStatus($qrisService, $posService, true);
+        }
+    }
+
+    /**
+     * Check transaction status directly against BuatQris API.
+     */
+    public function checkQrisStatus(BuatQrisService $qrisService, PosService $posService, bool $isAutomated = false)
+    {
+        if (empty($this->qrisTransactionId)) {
+            return;
+        }
+
+        // Enforce 20s cooldown on manual click
+        $elapsed = time() - $this->lastCheckTimestamp;
+        if (!$isAutomated && $elapsed < 20) {
+            $remaining = 20 - $elapsed;
+            $this->qrisCooldownSeconds = $remaining;
+            $this->qrisStatusMessage = "Harap tunggu {$remaining} detik sebelum cek status kembali (aturan API max 1x / 20 detik).";
+            return;
+        }
+
+        $res = $qrisService->checkStatus($this->qrisTransactionId);
+        $this->lastCheckTimestamp = time();
+        $this->qrisCooldownSeconds = 0;
+
+        if ($res['status'] === 'success') {
+            $this->qrisStatus = 'success';
+            $this->qrisStatusMessage = 'Pembayaran QRIS lunas!';
+            $this->completeQrisCheckout($posService);
+        } elseif ($res['status'] === 'expired') {
+            $this->qrisStatus = 'expired';
+            $this->qrisStatusMessage = 'Waktu pembayaran QRIS telah kedaluwarsa. Silakan batalkan transaksi.';
+        } elseif ($res['status'] === 'failed') {
+            $this->qrisStatus = 'failed';
+            $this->qrisStatusMessage = 'Pembayaran QRIS gagal atau dibatalkan.';
+        } else {
+            $this->qrisStatus = 'pending';
+            $this->qrisStatusMessage = $res['message'] ?? 'Menunggu pembayaran dari pelanggan...';
+        }
+    }
+
+    /**
+     * Finalize POS checkout once QRIS payment is confirmed.
+     */
+    public function completeQrisCheckout(PosService $posService)
+    {
+        $user = auth()->user();
+        $totalToPay = $this->qrisTotalAmount ?: $this->calculateTotal();
+
+        $items = [];
+        foreach ($this->cart as $item) {
+            $items[] = [
+                'product_id'    => $item['product_id'],
+                'quantity'      => $item['quantity'],
+                'item_discount' => $item['item_discount'] ?? 0,
+            ];
+        }
+
+        $payload = [
+            'items'             => $items,
+            'customer_id'       => $this->customerId ?: null,
+            'discount'          => $this->invoiceDiscount,
+            'payment_method'    => 'qris',
+            'paid_amount'       => $totalToPay,
+            'payment_reference' => $this->qrisTransactionId,
+            'note'              => trim(($this->note ?: '') . ' [BuatQris: ' . $this->qrisTransactionId . ']'),
+        ];
+
+        try {
+            $sale = $posService->checkout($payload, $user, $user->currentShift());
+
+            // Link QrisTransaction with completed Sale
+            QrisTransaction::where('transaction_id', $this->qrisTransactionId)->update([
+                'sale_id'        => $sale->id,
+                'invoice_number' => $sale->invoice_number,
+                'status'         => 'success',
+            ]);
+
+            // Close QR modal
+            $this->showQrisModal = false;
+
+            // Prepare receipt data
+            $this->lastSaleId = $sale->id;
+            $this->lastInvoiceNumber = $sale->invoice_number;
+            $this->lastTotal = $sale->total;
+            $this->lastPaidAmount = $sale->paid_amount;
+            $this->lastChangeAmount = $sale->change_amount;
+            $this->lastPaymentMethod = 'qris';
+            $this->lastSoldAt = $sale->sold_at ? $sale->sold_at->format('d/m/Y H:i') : now()->format('d/m/Y H:i');
+            $this->lastCustomerName = $sale->customer->name ?? 'Pelanggan Umum';
+
+            $sale->load('items');
+            $this->lastSaleItems = $sale->items->map(fn($it) => [
+                'name'     => $it->product_name,
+                'qty'      => $it->quantity,
+                'unit'     => $it->unit_name,
+                'price'    => $it->unit_price,
+                'discount' => $it->item_discount,
+                'subtotal' => $it->subtotal,
+            ])->toArray();
+
+            $this->showSuccessModal = true;
+            $this->clearCart();
+            $this->successMessage = "Pembayaran QRIS lunas! Transaksi {$sale->invoice_number} berhasil.";
+        } catch (\Exception $e) {
+            $this->errorMessage = 'Gagal menyimpan transaksi setelah pembayaran lunas: ' . $e->getMessage();
+        }
+    }
+
+    /**
+     * Cancel or dismiss active QRIS modal.
+     */
+    public function cancelQrisPayment()
+    {
+        $this->showQrisModal = false;
+        $this->qrisTransactionId = null;
+        $this->qrisQrUrl = null;
+        $this->qrisImage = null;
+        $this->qrisStatus = 'pending';
+        $this->qrisStatusMessage = '';
+    }
+
+    /**
+     * Simulate success payment in sandbox / local test mode.
+     */
+    public function simulateSuccessQris(PosService $posService)
+    {
+        if (!empty($this->qrisTransactionId)) {
+            $trx = QrisTransaction::where('transaction_id', $this->qrisTransactionId)->first();
+            if ($trx) {
+                $trx->status = 'success';
+                $trx->paid_at = now();
+                $trx->save();
+            }
+            $this->qrisStatus = 'success';
+            $this->completeQrisCheckout($posService);
+        }
+    }
+
     public function closeSuccessModal()
     {
         $this->showSuccessModal = false;
@@ -416,3 +649,4 @@ class PosTerminal extends Component
         ]);
     }
 }
+

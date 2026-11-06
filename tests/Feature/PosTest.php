@@ -377,3 +377,4 @@ class PosTest extends TestCase
         $this->assertEquals('INV-20260301-0002', $inv2);
     }
 }
+

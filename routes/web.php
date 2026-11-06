@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 // ----- Unauthenticated Routes -----
 Route::get('/', fn () => redirect()->route('login'));
 
+// BuatQris Webhook Callback (Public endpoint with HMAC-SHA256 signature verification)
+Route::post('/api/buatqris/webhook', [\App\Http\Controllers\BuatQrisWebhookController::class, 'handle'])->name('buatqris.webhook');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
@@ -79,5 +82,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         // User management
         Route::resource('users', UserController::class)->except(['destroy']);
         Route::patch('/users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
+
+        // Gateway BuatQris Configuration
+        Route::get('/settings/buatqris', [\App\Http\Controllers\BuatQrisSettingController::class, 'index'])->name('settings.buatqris');
+        Route::post('/settings/buatqris', [\App\Http\Controllers\BuatQrisSettingController::class, 'update'])->name('settings.buatqris.update');
+        Route::get('/settings/buatqris/check/{transactionId}', [\App\Http\Controllers\BuatQrisSettingController::class, 'checkStatus'])->name('settings.buatqris.check-status');
     });
 });

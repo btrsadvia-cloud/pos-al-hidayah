@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Session\Middleware\AuthenticateSession::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'api/buatqris/webhook',
+        ]);
+
         $middleware->alias([
             'active' => EnsureUserIsActive::class,
             'auth'   => Authenticate::class,
