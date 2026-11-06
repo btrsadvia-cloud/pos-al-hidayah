@@ -33,3 +33,4 @@ return [
     // Custom Webhook Callback URL (defaults to null, which uses BuatQris dashboard setting)
     'callback_url' => env('BUATQRIS_CALLBACK_URL', null),
 ];
+

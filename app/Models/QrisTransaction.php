@@ -74,3 +74,4 @@ class QrisTransaction extends Model
         return $this->status === 'failed';
     }
 }
+

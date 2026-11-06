@@ -97,3 +97,4 @@ class BuatQrisSettingController extends Controller
         return back()->with('error', $res['message'] ?? 'Gagal memeriksa status transaksi.');
     }
 }
+
