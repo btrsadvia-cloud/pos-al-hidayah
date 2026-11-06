@@ -18,7 +18,16 @@ class ProductController extends Controller
 
         if ($request->filled('search')) {
             $s = $request->search;
-            $query->where(fn($q) => $q->where('name', 'like', "%{$s}%")->orWhere('barcode', 'like', "%{$s}%"));
+            $query->where(function ($q) use ($s) {
+                $q->where('name', 'like', "%{$s}%")
+                  ->orWhere('barcode', 'like', "%{$s}%")
+                  ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$s}%"));
+            });
+        }
+
+        if ($request->filled('category')) {
+            $cat = $request->category;
+            $query->whereHas('category', fn($q) => $q->where('name', 'like', "%{$cat}%"));
         }
 
         if ($request->filled('category_id')) {

@@ -298,7 +298,7 @@
                 </div>
             @endif
 
-            @if ($errors->any())
+            @if (isset($errors) && $errors->any())
                 <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-r-lg shadow-xs">
                     <div class="font-semibold text-sm mb-1">Perhatian:</div>
                     <ul class="list-disc list-inside text-xs space-y-1">

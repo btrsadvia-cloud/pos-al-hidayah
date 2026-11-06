@@ -13,19 +13,19 @@
                     document.getElementById('invoice-discount-input')?.focus();
                 } else if (e.key === 'F9') {
                     e.preventDefault();
-                    if (@js($showPaymentStep)) {
+                    if ($wire.showPaymentStep) {
                         document.getElementById('btn-checkout')?.click();
                     } else {
                         document.getElementById('btn-to-payment')?.click();
                     }
                 } else if (e.key === 'Escape') {
-                    if (@js($showSuccessModal)) {
+                    if ($wire.showSuccessModal) {
                         $wire.closeSuccessModal();
-                    } else if (@js($showQrisModal)) {
+                    } else if ($wire.showQrisModal) {
                         $wire.cancelQrisPayment();
-                    } else if (@js($showShortcutsModal)) {
+                    } else if ($wire.showShortcutsModal) {
                         $wire.toggleShortcutsModal();
-                    } else if (@js($showPaymentStep)) {
+                    } else if ($wire.showPaymentStep) {
                         $wire.backToCart();
                     }
                 } else if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
@@ -111,10 +111,16 @@
                             Semua Kategori
                         </button>
                         @foreach($categories as $cat)
-                            <button type="button" wire:click="selectCategory({{ $cat->id }})"
-                                    class="px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition cursor-pointer {{ $selectedCategoryId === $cat->id ? 'bg-teal-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
-                                {{ $cat->name }}
-                            </button>
+                            @php
+                                $cId = is_object($cat) ? $cat->id : ($cat['id'] ?? null);
+                                $cName = is_object($cat) ? $cat->name : ($cat['name'] ?? null);
+                            @endphp
+                            @if($cId && $cName)
+                                <button type="button" wire:click="selectCategory({{ $cId }})"
+                                        class="px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition cursor-pointer {{ (int)$selectedCategoryId === (int)$cId ? 'bg-teal-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                                    {{ $cName }}
+                                </button>
+                            @endif
                         @endforeach
                     </div>
                 </div>

@@ -23,6 +23,11 @@ class InventoryController extends Controller
             $query->where('product_id', $request->product_id);
         }
 
+        if ($request->filled('product')) {
+            $p = $request->product;
+            $query->whereHas('product', fn($q) => $q->where('name', 'like', "%{$p}%")->orWhere('barcode', 'like', "%{$p}%"));
+        }
+
         if ($request->filled('date_from')) {
             $query->whereDate('movement_date', '>=', $request->date_from);
         }

@@ -103,11 +103,12 @@ class PosTerminal extends Component
             return;
         }
 
-        // 2. Name / partial barcode check: filter product list
+        // 2. Name / category / partial barcode check: filter product list
         $matches = Product::whereNull('deleted_at')
             ->where(function ($q) use ($trimmed) {
                 $q->where('name', 'like', "%{$trimmed}%")
-                  ->orWhere('barcode', 'like', "%{$trimmed}%");
+                  ->orWhere('barcode', 'like', "%{$trimmed}%")
+                  ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$trimmed}%"));
             })->exists();
 
         if (!$matches) {
@@ -669,22 +670,53 @@ class PosTerminal extends Component
             $s = trim($this->search);
             $productQuery->where(function ($q) use ($s) {
                 $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('barcode', 'like', "%{$s}%");
+                  ->orWhere('barcode', 'like', "%{$s}%")
+                  ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$s}%"));
             });
         }
 
         $products = $productQuery->orderBy('name')->limit(36)->get();
-        $categories = cache()->remember('pos_categories', 60, fn () => \App\Models\Category::orderBy('name')->get());
+        $categories = \App\Models\Category::orderBy('name')->get();
         $customers = Customer::orderBy('name')->get();
 
         return view('livewire.pos-terminal', [
-            'products'      => $products,
-            'categories'    => $categories,
-            'customers'     => $customers,
-            'subtotal'      => $this->calculateSubtotal(),
-            'totalDiscount' => $this->calculateTotalDiscount(),
-            'total'         => $this->calculateTotal(),
-            'change'        => $this->calculateChange(),
+            'products'           => $products,
+            'categories'         => $categories,
+            'customers'          => $customers,
+            'search'             => $this->search,
+            'selectedCategoryId' => $this->selectedCategoryId,
+            'showPaymentStep'    => $this->showPaymentStep,
+            'showSuccessModal'   => $this->showSuccessModal,
+            'showQrisModal'      => $this->showQrisModal,
+            'showShortcutsModal' => $this->showShortcutsModal,
+            'cart'               => $this->cart,
+            'customerId'         => $this->customerId,
+            'invoiceDiscount'    => $this->invoiceDiscount,
+            'paymentMethod'      => $this->paymentMethod,
+            'paidAmount'         => $this->paidAmount,
+            'paymentReference'   => $this->paymentReference,
+            'note'               => $this->note,
+            'errorMessage'       => $this->errorMessage,
+            'lastSaleId'         => $this->lastSaleId,
+            'lastInvoiceNumber'  => $this->lastInvoiceNumber,
+            'lastSoldAt'         => $this->lastSoldAt,
+            'lastCustomerName'   => $this->lastCustomerName,
+            'lastSaleItems'      => $this->lastSaleItems,
+            'lastTotal'          => $this->lastTotal,
+            'lastPaidAmount'     => $this->lastPaidAmount,
+            'lastPaymentMethod'  => $this->lastPaymentMethod,
+            'lastChangeAmount'   => $this->lastChangeAmount,
+            'qrisTransactionId'  => $this->qrisTransactionId,
+            'qrisImage'          => $this->qrisImage,
+            'qrisQrUrl'          => $this->qrisQrUrl,
+            'qrisTotalAmount'    => $this->qrisTotalAmount,
+            'qrisAmountUniq'     => $this->qrisAmountUniq,
+            'qrisStatus'         => $this->qrisStatus,
+            'qrisStatusMessage'  => $this->qrisStatusMessage,
+            'subtotal'           => $this->calculateSubtotal(),
+            'totalDiscount'      => $this->calculateTotalDiscount(),
+            'total'              => $this->calculateTotal(),
+            'change'             => $this->calculateChange(),
         ]);
     }
 }

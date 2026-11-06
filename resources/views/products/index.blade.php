@@ -45,12 +45,9 @@
                 </div>
 
                 <div class="sm:col-span-4">
-                    <select name="category_id" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 text-xs">
-                        <option value="">-- Semua Kategori --</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="category" value="{{ request('category') }}"
+                           placeholder="Ketik kategori produk..."
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 text-xs">
                 </div>
 
                 <div class="sm:col-span-3 flex items-center space-x-2">
@@ -58,7 +55,7 @@
                             class="flex-1 py-2.5 px-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition cursor-pointer min-h-[40px]">
                         Filter
                     </button>
-                    @if(request()->hasAny(['search', 'category_id', 'low_stock']))
+                    @if(request()->hasAny(['search', 'category', 'category_id', 'low_stock']))
                         <a href="{{ route('products.index') }}" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition min-h-[40px] flex items-center">
                             Reset
                         </a>

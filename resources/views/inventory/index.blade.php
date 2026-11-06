@@ -27,13 +27,10 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
             <form method="GET" action="{{ route('inventory.index') }}" class="grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs">
                 <div class="sm:col-span-3">
-                    <label class="block font-medium text-slate-600 mb-1">Pilih Produk</label>
-                    <select name="product_id" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white text-xs">
-                        <option value="">-- Semua Produk --</option>
-                        @foreach($products as $p)
-                            <option value="{{ $p->id }}" {{ request('product_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block font-medium text-slate-600 mb-1">Cari Produk</label>
+                    <input type="text" name="product" value="{{ request('product') }}"
+                           placeholder="Ketik nama atau barcode barang..."
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white text-xs">
                 </div>
 
                 <div class="sm:col-span-2">
