@@ -48,7 +48,7 @@
                                 </td>
                                 <td class="py-3 px-4 text-right space-x-2">
                                     <a href="{{ route('customers.edit', $c) }}" class="text-teal-700 hover:underline font-semibold">Ubah</a>
-                                    <form method="POST" action="{{ route('customers.destroy', $c) }}" class="inline" onsubmit="return confirm('Hapus pelanggan ini?')">
+                                    <form method="POST" action="{{ route('customers.destroy', $c) }}" class="inline" onsubmit="return window.customConfirm(event, 'Hapus data pelanggan {{ addslashes($c->name) }}?', 'Hapus Pelanggan', 'Ya, Hapus')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:underline font-semibold cursor-pointer">Hapus</button>

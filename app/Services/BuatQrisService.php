@@ -120,15 +120,8 @@ class BuatQrisService
 
             $data = $body['data'];
 
-            // Store QRIS transaction in database
-            $expiredAt = null;
-            if (!empty($data['expired_at'])) {
-                try {
-                    $expiredAt = Carbon::parse($data['expired_at']);
-                } catch (\Exception $e) {
-                    $expiredAt = Carbon::now()->addMinutes(15);
-                }
-            }
+            // QRIS valid for 5 minutes per user requirement
+            $expiredAt = Carbon::now()->addMinutes(5);
 
             $trx = QrisTransaction::create([
                 'transaction_id' => (string) $data['transaction_id'],

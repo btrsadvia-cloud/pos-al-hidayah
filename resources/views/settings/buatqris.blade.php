@@ -149,12 +149,14 @@
                         Salin URL berikut dan masukkan ke dasbor BuatQris pada menu <strong>Open API &rarr; Webhook / Callback</strong> agar sistem otomatis menerima notifikasi pembayaran lunas.
                     </p>
 
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-2">
+                    <div x-data="{ copied: false }" class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-2">
                         <input type="text" readonly value="{{ $webhookUrl }}" id="webhook-url-input"
                                class="bg-transparent text-xs font-mono text-slate-800 outline-none w-full select-all">
-                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('webhook-url-input').value); alert('URL Webhook berhasil disalin!');"
+                        <button type="button"
+                                @click="navigator.clipboard.writeText(document.getElementById('webhook-url-input').value); copied = true; setTimeout(() => copied = false, 2500);"
                                 class="shrink-0 px-2.5 py-1 bg-white border border-slate-200 hover:bg-slate-100 text-xs font-semibold rounded-lg text-slate-700 shadow-2xs transition cursor-pointer">
-                            Salin
+                            <span x-show="!copied">Salin URL</span>
+                            <span x-show="copied" x-cloak class="text-teal-700 font-bold">✓ Tersalin!</span>
                         </button>
                     </div>
 

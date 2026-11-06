@@ -48,7 +48,7 @@
 
                 <div class="flex items-center space-x-3 pt-3">
                     <button type="submit"
-                            onclick="return confirm('Apakah Anda yakin ingin mengurangi stok barang ini?')"
+                            onclick="return window.customConfirm(event, 'Apakah Anda yakin ingin mencatat pengeluaran stok barang ini?', 'Konfirmasi Pengeluaran', 'Ya, Catat Pengeluaran')"
                             class="px-6 py-3 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold rounded-xl text-sm shadow-md transition cursor-pointer min-h-[44px]">
                         Kurangi Stok
                     </button>

@@ -40,7 +40,7 @@
                                 <td class="py-3 px-4 text-slate-700 font-mono">{{ $s->bank_account ?: '-' }}</td>
                                 <td class="py-3 px-4 text-right space-x-2">
                                     <a href="{{ route('suppliers.edit', $s) }}" class="text-teal-700 hover:underline font-semibold">Ubah</a>
-                                    <form method="POST" action="{{ route('suppliers.destroy', $s) }}" class="inline" onsubmit="return confirm('Hapus pemasok ini?')">
+                                    <form method="POST" action="{{ route('suppliers.destroy', $s) }}" class="inline" onsubmit="return window.customConfirm(event, 'Hapus data pemasok {{ addslashes($s->name) }}?', 'Hapus Pemasok', 'Ya, Hapus')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:underline font-semibold cursor-pointer">Hapus</button>

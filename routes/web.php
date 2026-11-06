@@ -67,6 +67,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('units', UnitController::class)->except(['show']);
         Route::resource('products', ProductController::class);
+        Route::post('/products/{product}/image', [ProductController::class, 'updateImage'])->name('products.image.update');
         Route::get('/products/{product}/prices', [ProductController::class, 'editPrices'])->name('products.prices');
         Route::put('/products/{product}/prices', [ProductController::class, 'updatePrices'])->name('products.prices.update');
 

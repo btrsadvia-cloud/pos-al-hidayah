@@ -193,14 +193,6 @@
                         <span>Kategori</span>
                     </a>
 
-                    <a href="{{ route('units.index') }}"
-                       class="flex items-center space-x-3 px-3 py-2 rounded-lg font-medium transition {{ request()->routeIs('units.*') ? 'bg-teal-50 text-teal-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                        </svg>
-                        <span>Satuan Ukur</span>
-                    </a>
-
                     <a href="{{ route('suppliers.index') }}"
                        class="flex items-center space-x-3 px-3 py-2 rounded-lg font-medium transition {{ request()->routeIs('suppliers.*') ? 'bg-teal-50 text-teal-700 font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,7 +261,6 @@
                     <div class="pt-2 border-t border-slate-100 my-2"></div>
                     <a href="{{ route('products.index') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Produk</a>
                     <a href="{{ route('categories.index') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Kategori</a>
-                    <a href="{{ route('units.index') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Satuan</a>
                     <a href="{{ route('suppliers.index') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Pemasok</a>
                     <a href="{{ route('reports.index') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Laporan Penjualan</a>
                     <a href="{{ route('users.index') }}" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100">Pengguna</a>
@@ -361,6 +352,67 @@
             <span class="text-[10px] mt-0.5">Menu</span>
         </button>
     </nav>
+
+    <!-- Global Modern Confirmation Modal (Replaces native browser 'localhost says' confirm) -->
+    <div x-data="{
+        confirmOpen: false,
+        confirmTitle: 'Konfirmasi Tindakan',
+        confirmMessage: 'Apakah Anda yakin ingin melanjutkan tindakan ini?',
+        confirmCallback: null,
+        confirmButtonText: 'Ya, Lanjutkan',
+        confirmIsDanger: true
+    }"
+    @open-confirm.window="
+        confirmTitle = $event.detail.title || 'Konfirmasi Tindakan';
+        confirmMessage = $event.detail.message || 'Apakah Anda yakin?';
+        confirmCallback = $event.detail.callback;
+        confirmButtonText = $event.detail.buttonText || 'Ya, Lanjutkan';
+        confirmIsDanger = $event.detail.isDanger !== false;
+        confirmOpen = true;
+    "
+    x-show="confirmOpen" x-cloak
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center animate-in fade-in zoom-in-95 duration-150">
+            <div class="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+                 :class="confirmIsDanger ? 'bg-red-50 text-red-600' : 'bg-teal-50 text-teal-600'">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h3 class="font-bold text-lg text-slate-900 mb-1" x-text="confirmTitle"></h3>
+            <p class="text-xs text-slate-500 mb-6 leading-relaxed" x-text="confirmMessage"></p>
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" @click="confirmOpen = false"
+                        class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition cursor-pointer">
+                    Batal
+                </button>
+                <button type="button"
+                        @click="if (confirmCallback) confirmCallback(); confirmOpen = false;"
+                        :class="confirmIsDanger ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-teal-600 hover:bg-teal-700 text-white'"
+                        class="py-2.5 px-4 font-bold rounded-xl text-xs transition cursor-pointer shadow-xs"
+                        x-text="confirmButtonText">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.customConfirm = function(event, message, title = 'Konfirmasi Tindakan', buttonText = 'Ya, Lanjutkan') {
+            event.preventDefault();
+            const form = event.target.closest('form');
+            window.dispatchEvent(new CustomEvent('open-confirm', {
+                detail: {
+                    title: title,
+                    message: message,
+                    buttonText: buttonText,
+                    callback: () => {
+                        if (form) form.submit();
+                    }
+                }
+            }));
+            return false;
+        };
+    </script>
 
     @livewireScripts
 </body>

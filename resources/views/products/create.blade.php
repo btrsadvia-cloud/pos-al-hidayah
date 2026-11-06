@@ -45,17 +45,7 @@
                                 <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                             @endforeach
                         </select>
-                    </div>
-
-                    <div>
-                        <label for="unit_id" class="block text-sm font-semibold text-slate-800 mb-1">Satuan Ukur <span class="text-red-500">*</span></label>
-                        <select id="unit_id" name="unit_id" required
-                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900">
-                            <option value="">-- Pilih Satuan --</option>
-                            @foreach($units as $u)
-                                <option value="{{ $u->id }}" {{ old('unit_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
-                            @endforeach
-                        </select>
+                        <input type="hidden" name="unit_id" value="{{ old('unit_id', $units->first()->id ?? 1) }}">
                     </div>
 
                     <div>

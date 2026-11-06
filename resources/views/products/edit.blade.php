@@ -29,10 +29,26 @@
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 font-mono text-sm text-slate-900 outline-none">
                     </div>
 
-                    <div>
-                        <label for="image" class="block text-sm font-semibold text-slate-800 mb-1">Foto Baru (Kosongkan jika tetap)</label>
-                        <input type="file" id="image" name="image" accept="image/*"
-                               class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer">
+                    <div x-data="{ preview: null }">
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">Foto Produk (Dari Berkas Pribadi)</label>
+                        <div class="flex items-center space-x-3 mb-2">
+                            <template x-if="preview">
+                                <img :src="preview" class="w-16 h-16 rounded-xl object-cover border-2 border-teal-500 shadow-sm shrink-0">
+                            </template>
+                            <template x-if="!preview">
+                                @if($product->image)
+                                    <img src="{{ asset('storage/' . $product->image) }}" class="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-xs shrink-0">
+                                @else
+                                    <div class="w-16 h-16 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-semibold shrink-0">Tanpa Foto</div>
+                                @endif
+                            </template>
+                            <div class="flex-1">
+                                <input type="file" id="image" name="image" accept="image/*"
+                                       @change="const f = $event.target.files[0]; if(f) { const r = new FileReader(); r.onload = (e) => preview = e.target.result; r.readAsDataURL(f); }"
+                                       class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer">
+                                <p class="text-[11px] text-slate-400 mt-1">Pilih berkas gambar JPG/PNG dari komputer untuk mengganti foto</p>
+                            </div>
+                        </div>
                     </div>
 
                     <div>
@@ -43,16 +59,7 @@
                                 <option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                             @endforeach
                         </select>
-                    </div>
-
-                    <div>
-                        <label for="unit_id" class="block text-sm font-semibold text-slate-800 mb-1">Satuan <span class="text-red-500">*</span></label>
-                        <select id="unit_id" name="unit_id" required
-                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900">
-                            @foreach($units as $u)
-                                <option value="{{ $u->id }}" {{ old('unit_id', $product->unit_id) == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
-                            @endforeach
-                        </select>
+                        <input type="hidden" name="unit_id" value="{{ old('unit_id', $product->unit_id ?? 1) }}">
                     </div>
 
                     <div>

@@ -43,7 +43,7 @@
 
                     <div class="flex items-center space-x-3 pt-2">
                         <button type="submit"
-                                onclick="return confirm('Apakah Anda yakin ingin menutup shift ini?')"
+                                onclick="return window.customConfirm(event, 'Tutup shift kasir sekarang dan simpan rekapan kas?', 'Konfirmasi Tutup Shift', 'Ya, Tutup Shift')"
                                 class="px-5 py-3 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-semibold rounded-xl text-sm shadow-xs transition cursor-pointer min-h-[44px]">
                             Tutup Shift Sekarang
                         </button>

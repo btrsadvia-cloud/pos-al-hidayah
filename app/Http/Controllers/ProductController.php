@@ -215,6 +215,22 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Harga produk berhasil diperbarui.');
     }
 
+    public function updateImage(Request $request, Product $product)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+        ]);
+
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+
+        $path = $request->file('image')->store('products', 'public');
+        $product->update(['image' => $path]);
+
+        return back()->with('success', "Foto untuk produk '{$product->name}' berhasil diperbarui!");
+    }
+
     public function destroy(Product $product)
     {
         $product->delete();

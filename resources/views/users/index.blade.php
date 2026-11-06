@@ -60,7 +60,7 @@
 
                                     @if($u->id !== auth()->id())
                                         <form method="POST" action="{{ route('users.toggle-active', $u) }}" class="inline"
-                                              onsubmit="return confirm('Apakah Anda yakin ingin mengubah status aktif akun {{ $u->name }}?')">
+                                              onsubmit="return window.customConfirm(event, 'Ubah status aktif akun {{ addslashes($u->name) }}?', 'Kelola Pengguna', 'Ya, Ubah Status')">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit" class="font-semibold cursor-pointer {{ $u->is_active ? 'text-amber-600 hover:underline' : 'text-emerald-600 hover:underline' }}">

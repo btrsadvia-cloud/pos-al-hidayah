@@ -18,6 +18,9 @@ class PosTerminal extends Component
     public string $search = '';
     public ?int $selectedCategoryId = null;
 
+    // POS Workflow Step: false = Pemilihan Barang (Katalog & Keranjang), true = Layar Pembayaran
+    public bool $showPaymentStep = false;
+
     // Cart: array of items [product_id => ['product_id', 'name', 'barcode', 'unit', 'price', 'tier', 'quantity', 'max_stock', 'item_discount', 'subtotal']]
     public array $cart = [];
 
@@ -56,6 +59,7 @@ class PosTerminal extends Component
     public int $qrisAmountUniq = 0;
     public int $qrisAdminFee = 0;
     public ?string $qrisExpiredAt = null;
+    public int $qrisSecondsRemaining = 300;
     public string $qrisStatus = 'pending'; // pending, success, expired, failed
     public string $qrisStatusMessage = '';
     public int $lastCheckTimestamp = 0;
@@ -71,36 +75,45 @@ class PosTerminal extends Component
         }
     }
 
-    public function updatedSearch()
+    public function performSearch()
     {
-        // When barcode scanner sends Enter after barcode, it can trigger quick-add if exact barcode matches
-        $trimmed = trim($this->search);
-        if ($trimmed !== '') {
-            $exactProduct = Product::where('barcode', $trimmed)->first();
-            if ($exactProduct) {
-                $this->addToCart($exactProduct->id);
-                $this->search = '';
-            }
-        }
+        $this->handleBarcodeScan();
+    }
+
+    public function resetSearch()
+    {
+        $this->search = '';
+        $this->clearError();
     }
 
     public function handleBarcodeScan()
     {
         $trimmed = trim($this->search);
         if ($trimmed === '') {
+            $this->clearError();
             return;
         }
 
-        $product = Product::where('barcode', $trimmed)
-            ->orWhere('name', 'like', "%{$trimmed}%")
-            ->first();
-
-        if ($product) {
-            $this->addToCart($product->id);
+        // 1. Exact barcode check: instantly add to cart
+        $exactProduct = Product::where('barcode', $trimmed)->first();
+        if ($exactProduct) {
+            $this->addToCart($exactProduct->id);
             $this->search = '';
             $this->clearError();
+            return;
+        }
+
+        // 2. Name / partial barcode check: filter product list
+        $matches = Product::whereNull('deleted_at')
+            ->where(function ($q) use ($trimmed) {
+                $q->where('name', 'like', "%{$trimmed}%")
+                  ->orWhere('barcode', 'like', "%{$trimmed}%");
+            })->exists();
+
+        if (!$matches) {
+            $this->errorMessage = "Produk dengan kata kunci '{$trimmed}' tidak ditemukan.";
         } else {
-            $this->errorMessage = "Produk dengan barcode/nama '{$trimmed}' tidak ditemukan.";
+            $this->clearError();
         }
     }
 
@@ -222,6 +235,23 @@ class PosTerminal extends Component
         $this->recalculatePaymentDefaults();
     }
 
+    public function proceedToPayment()
+    {
+        $this->clearError();
+        if (empty($this->cart)) {
+            $this->errorMessage = 'Keranjang masih kosong. Pilih minimal satu barang terlebih dahulu.';
+            return;
+        }
+        $this->recalculatePaymentDefaults();
+        $this->showPaymentStep = true;
+    }
+
+    public function backToCart()
+    {
+        $this->showPaymentStep = false;
+        $this->clearError();
+    }
+
     public function clearCart()
     {
         $this->cart = [];
@@ -229,6 +259,7 @@ class PosTerminal extends Component
         $this->paidAmount = 0;
         $this->paymentReference = '';
         $this->note = '';
+        $this->showPaymentStep = false;
         $this->clearError();
     }
 
@@ -283,14 +314,21 @@ class PosTerminal extends Component
 
     public function recalculateAllTiers()
     {
+        if (empty($this->cart)) {
+            return;
+        }
+
+        $productIds = array_keys($this->cart);
+        $products = Product::with('prices')->whereIn('id', $productIds)->get()->keyBy('id');
+
         foreach ($this->cart as $productId => $item) {
-            $product = Product::with('prices')->find($productId);
+            $product = $products->get($productId);
             if ($product) {
                 $priceInfo = $product->getPriceForQty($item['quantity']);
                 $this->cart[$productId]['price'] = (int) $priceInfo['price'];
                 $this->cart[$productId]['tier'] = $priceInfo['tier'];
                 $gross = (int) $priceInfo['price'] * $item['quantity'];
-                $this->cart[$productId]['subtotal'] = max(0, $gross - $item['item_discount']);
+                $this->cart[$productId]['subtotal'] = max(0, $gross - ($item['item_discount'] ?? 0));
             }
         }
     }
@@ -434,7 +472,8 @@ class PosTerminal extends Component
         $this->qrisTotalAmount = $trx->total_amount;
         $this->qrisAmountUniq = $trx->amount_uniq;
         $this->qrisAdminFee = $trx->admin_fee;
-        $this->qrisExpiredAt = $trx->expired_at ? $trx->expired_at->format('H:i') : null;
+        $this->qrisExpiredAt = $trx->expired_at ? $trx->expired_at->format('H:i') : now()->addMinutes(5)->format('H:i');
+        $this->qrisSecondsRemaining = 300;
         $this->qrisStatus = 'pending';
         $this->qrisStatusMessage = 'Scan kode QRIS di bawah ini dengan aplikasi e-wallet atau mobile banking.';
         $this->lastCheckTimestamp = time();
@@ -634,8 +673,8 @@ class PosTerminal extends Component
             });
         }
 
-        $products = $productQuery->orderBy('name')->limit(24)->get();
-        $categories = \App\Models\Category::orderBy('name')->get();
+        $products = $productQuery->orderBy('name')->limit(36)->get();
+        $categories = cache()->remember('pos_categories', 60, fn () => \App\Models\Category::orderBy('name')->get());
         $customers = Customer::orderBy('name')->get();
 
         return view('livewire.pos-terminal', [
