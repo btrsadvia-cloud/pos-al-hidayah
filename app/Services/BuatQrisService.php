@@ -32,6 +32,19 @@ class BuatQrisService
     }
 
     /**
+     * Build HTTP client with SSL CA bundle support for Windows environments.
+     */
+    protected function newHttpClient()
+    {
+        $caBundle = storage_path('cacert.pem');
+        $client = Http::asForm()->timeout(15);
+        if (file_exists($caBundle)) {
+            $client = $client->withOptions(['verify' => $caBundle]);
+        }
+        return $client;
+    }
+
+    /**
      * Check if credentials are configured.
      */
     public function isConfigured(): bool
@@ -91,8 +104,7 @@ class BuatQrisService
         }
 
         try {
-            $response = Http::asForm()
-                ->timeout(15)
+            $response = $this->newHttpClient()
                 ->post($this->baseUrl, $params);
 
             $body = $response->json();
@@ -181,8 +193,7 @@ class BuatQrisService
         }
 
         try {
-            $response = Http::asForm()
-                ->timeout(10)
+            $response = $this->newHttpClient()
                 ->post($this->baseUrl, [
                     'action'         => 'api_check_status',
                     'account_id'     => $this->accountId,
@@ -329,3 +340,4 @@ class BuatQrisService
         return ['success' => true, 'message' => 'Event noted'];
     }
 }
+
