@@ -52,13 +52,62 @@
                     </div>
 
                     <div>
-                        <label for="category_id" class="block text-sm font-semibold text-slate-800 mb-1">Kategori <span class="text-red-500">*</span></label>
-                        <select id="category_id" name="category_id" required
-                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900">
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">Kategori Produk <span class="text-red-500">*</span></label>
+                        <div x-data="{
+                            open: false,
+                            search: '',
+                            selectedId: '{{ old('category_id', $product->category_id) }}',
+                            items: {{ json_encode($categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name])) }},
+                            init() {
+                                if (this.selectedId) {
+                                    const found = this.items.find(i => i.id == this.selectedId);
+                                    if (found) this.search = found.name;
+                                }
+                            },
+                            get filtered() {
+                                if (!this.search.trim()) return this.items;
+                                const q = this.search.toLowerCase();
+                                return this.items.filter(i => i.name.toLowerCase().includes(q));
+                            },
+                            select(it) {
+                                this.selectedId = it.id;
+                                this.search = it.name;
+                                this.open = false;
+                            },
+                            clear() {
+                                this.selectedId = '';
+                                this.search = '';
+                                this.open = true;
+                            }
+                        }" class="relative">
+                            <input type="hidden" id="category_id" name="category_id" :value="selectedId" required>
+                            <div class="relative">
+                                <input type="text"
+                                       x-model="search"
+                                       @focus="open = true"
+                                       @click="open = true"
+                                       placeholder="Ketik manual kategori produk..."
+                                       autocomplete="off"
+                                       required
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900 pr-10">
+                                <button type="button" x-show="search.length > 0" @click="clear()"
+                                        class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
+                                    &times;
+                                </button>
+                            </div>
+                            <div x-show="open && filtered.length > 0"
+                                 @click.outside="open = false"
+                                 x-cloak
+                                 class="absolute z-30 left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs">
+                                <template x-for="it in filtered" :key="it.id">
+                                    <button type="button" @click="select(it)"
+                                            class="w-full text-left px-3.5 py-2.5 hover:bg-teal-50 hover:text-teal-900 transition flex justify-between items-center cursor-pointer">
+                                        <span class="font-semibold text-slate-800 text-xs" x-text="it.name"></span>
+                                        <span class="text-teal-600 font-bold ml-2 shrink-0" x-show="selectedId == it.id">✓ Terpilih</span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
                         <input type="hidden" name="unit_id" value="{{ old('unit_id', $product->unit_id ?? 1) }}">
                     </div>
 

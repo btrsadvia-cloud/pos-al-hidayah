@@ -32,12 +32,18 @@
                 </div>
 
                 <div>
-                    <label for="level" class="block text-sm font-semibold text-slate-800 mb-1">Peran / Hak Akses <span class="text-red-500">*</span></label>
-                    <select id="level" name="level" required
-                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900">
-                        <option value="2" {{ old('level', $user->level) == 2 ? 'selected' : '' }}>Kasir (Layar POS, Shift, Transaksi Sendiri, Inventori)</option>
-                        <option value="1" {{ old('level', $user->level) == 1 ? 'selected' : '' }}>Admin / Pemilik (Akses Penuh Semua Modul & Laporan)</option>
-                    </select>
+                    <label class="block text-sm font-semibold text-slate-800 mb-1">Peran / Hak Akses <span class="text-red-500">*</span></label>
+                    <div class="flex items-center space-x-2" x-data="{ level: '{{ old('level', $user->level) }}' }">
+                        <input type="hidden" name="level" :value="level">
+                        <button type="button" @click="level = '2'" :class="level == '2' ? 'bg-teal-600 text-white border-teal-600 shadow-sm' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-3 py-2.5 rounded-xl border text-sm font-semibold transition cursor-pointer text-center">
+                            <div class="font-bold">Kasir</div>
+                            <div class="text-[10px] mt-0.5 opacity-80">POS, Shift, Transaksi, Inventori</div>
+                        </button>
+                        <button type="button" @click="level = '1'" :class="level == '1' ? 'bg-teal-600 text-white border-teal-600 shadow-sm' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-3 py-2.5 rounded-xl border text-sm font-semibold transition cursor-pointer text-center">
+                            <div class="font-bold">Admin / Pemilik</div>
+                            <div class="text-[10px] mt-0.5 opacity-80">Akses Penuh Semua Modul</div>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex items-center space-x-3 pt-3">

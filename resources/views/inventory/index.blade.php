@@ -35,11 +35,12 @@
 
                 <div class="sm:col-span-2">
                     <label class="block font-medium text-slate-600 mb-1">Jenis Mutasi</label>
-                    <select name="type" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white text-xs">
-                        <option value="">Semua (In/Out)</option>
-                        <option value="in" {{ request('type') === 'in' ? 'selected' : '' }}>Stok Masuk (In)</option>
-                        <option value="out" {{ request('type') === 'out' ? 'selected' : '' }}>Stok Keluar (Out)</option>
-                    </select>
+                    <div class="flex items-center space-x-1" x-data="{ type: '{{ request('type') }}' }">
+                        <input type="hidden" name="type" :value="type">
+                        <button type="button" @click="type = ''" :class="type === '' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-xs font-semibold transition cursor-pointer text-center">Semua</button>
+                        <button type="button" @click="type = 'in'" :class="type === 'in' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-xs font-semibold transition cursor-pointer text-center">Masuk</button>
+                        <button type="button" @click="type = 'out'" :class="type === 'out' ? 'bg-red-600 text-white border-red-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-xs font-semibold transition cursor-pointer text-center">Keluar</button>
+                    </div>
                 </div>
 
                 <div class="sm:col-span-2">

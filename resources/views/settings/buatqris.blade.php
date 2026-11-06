@@ -78,33 +78,47 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                             <!-- Fee By -->
                             <div>
-                                <label for="fee_by" class="block text-xs font-semibold text-slate-700 mb-1">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">
                                     Tanggungan Biaya Admin (Fee)
                                 </label>
-                                <select id="fee_by" name="fee_by"
-                                        class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white">
-                                    <option value="user" {{ old('fee_by', $currentConfig['fee_by']) === 'user' ? 'selected' : '' }}>
-                                        Dipotong dari Saldo Toko (Default)
-                                    </option>
-                                    <option value="buyer" {{ old('fee_by', $currentConfig['fee_by']) === 'buyer' ? 'selected' : '' }}>
-                                        Dibebankan ke Pembeli (+ ke total tagihan)
-                                    </option>
-                                </select>
+                                <div class="flex items-center space-x-2" x-data="{ fee: '{{ old('fee_by', $currentConfig['fee_by']) }}' }">
+                                    <input type="hidden" name="fee_by" :value="fee">
+                                    <button type="button" @click="fee = 'user'" :class="fee === 'user' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">Saldo Toko</button>
+                                    <button type="button" @click="fee = 'buyer'" :class="fee === 'buyer' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">Pembeli</button>
+                                </div>
                             </div>
 
                             <!-- QRIS Method -->
                             <div>
-                                <label for="method" class="block text-xs font-semibold text-slate-700 mb-1">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">
                                     Metode QRIS (Opsional)
                                 </label>
-                                <select id="method" name="method"
-                                        class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white">
-                                    <option value="">Default Admin BuatQris</option>
-                                    <option value="qris_one" {{ old('method', $currentConfig['method']) === 'qris_one' ? 'selected' : '' }}>QRIS One</option>
-                                    <option value="qris_two" {{ old('method', $currentConfig['method']) === 'qris_two' ? 'selected' : '' }}>QRIS Two</option>
-                                    <option value="qris_three" {{ old('method', $currentConfig['method']) === 'qris_three' ? 'selected' : '' }}>QRIS Three</option>
-                                    <option value="qris_four" {{ old('method', $currentConfig['method']) === 'qris_four' ? 'selected' : '' }}>QRIS Four</option>
-                                </select>
+                                <div x-data="{
+                                    open: false,
+                                    selected: '{{ old('method', $currentConfig['method']) }}',
+                                    items: [
+                                        { val: '', label: 'Default Admin BuatQris' },
+                                        { val: 'qris_one', label: 'QRIS One' },
+                                        { val: 'qris_two', label: 'QRIS Two' },
+                                        { val: 'qris_three', label: 'QRIS Three' },
+                                        { val: 'qris_four', label: 'QRIS Four' }
+                                    ],
+                                    get label() { return (this.items.find(i => i.val === this.selected) || this.items[0]).label; }
+                                }" class="relative">
+                                    <input type="hidden" name="method" :value="selected">
+                                    <button type="button" @click="open = !open" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 bg-white text-left flex items-center justify-between cursor-pointer hover:border-teal-500 transition">
+                                        <span class="text-xs font-semibold text-slate-800" x-text="label"></span>
+                                        <svg class="w-3.5 h-3.5 text-slate-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div x-show="open" @click.outside="open = false" x-cloak class="absolute z-30 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs overflow-hidden">
+                                        <template x-for="it in items" :key="it.val">
+                                            <button type="button" @click="selected = it.val; open = false" class="w-full text-left px-3 py-2.5 hover:bg-teal-50 transition cursor-pointer flex justify-between items-center" :class="selected === it.val && 'bg-teal-50 text-teal-800'">
+                                                <span class="font-semibold" x-text="it.label"></span>
+                                                <span class="text-teal-600 font-bold" x-show="selected === it.val">✓</span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

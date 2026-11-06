@@ -11,28 +11,143 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
             <form method="POST" action="{{ route('inventory.stock-in.store') }}" class="space-y-4">
                 @csrf
+
+                <!-- Cari Produk (Ketik Manual) -->
                 <div>
-                    <label for="product_id" class="block text-sm font-semibold text-slate-800 mb-1">Pilih Produk <span class="text-red-500">*</span></label>
-                    <select id="product_id" name="product_id" required
-                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900">
-                        <option value="">-- Pilih Produk --</option>
-                        @foreach($products as $p)
-                            <option value="{{ $p->id }}" {{ old('product_id') == $p->id ? 'selected' : '' }}>
-                                {{ $p->name }} (Stok saat ini: {{ $p->stock }} {{ $p->unit->name ?? 'Pcs' }})
-                            </option>
-                        @endforeach
-                    </select>
+                    <label class="block text-sm font-semibold text-slate-800 mb-1">Pilih Produk <span class="text-red-500">*</span></label>
+                    <div x-data="{
+                        open: false,
+                        search: '',
+                        selectedId: '{{ old('product_id') }}',
+                        items: {{ json_encode($products->map(fn($p) => ['id' => $p->id, 'name' => $p->name, 'extra' => 'Barcode: ' . ($p->barcode ?: '-') . ' | Stok: ' . $p->stock . ' ' . ($p->unit->name ?? 'Pcs')])) }},
+                        init() {
+                            if (this.selectedId) {
+                                const found = this.items.find(i => i.id == this.selectedId);
+                                if (found) this.search = found.name;
+                            }
+                        },
+                        get filtered() {
+                            if (!this.search.trim()) return this.items.slice(0, 20);
+                            const q = this.search.toLowerCase();
+                            return this.items.filter(i => i.name.toLowerCase().includes(q) || i.extra.toLowerCase().includes(q)).slice(0, 20);
+                        },
+                        select(it) {
+                            this.selectedId = it.id;
+                            this.search = it.name;
+                            this.open = false;
+                        },
+                        clear() {
+                            this.selectedId = '';
+                            this.search = '';
+                            this.open = true;
+                        }
+                    }" class="relative">
+                        <input type="hidden" id="product_id" name="product_id" :value="selectedId" required>
+                        <div class="relative">
+                            <input type="text"
+                                   x-model="search"
+                                   @focus="open = true"
+                                   @click="open = true"
+                                   placeholder="Ketik manual nama atau barcode produk..."
+                                   autocomplete="off"
+                                   required
+                                   class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900 pr-10">
+                            <button type="button" x-show="search.length > 0" @click="clear()"
+                                    class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
+                                &times;
+                            </button>
+                        </div>
+                        <div x-show="open && filtered.length > 0"
+                             @click.outside="open = false"
+                             x-cloak
+                             class="absolute z-30 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs">
+                            <template x-for="it in filtered" :key="it.id">
+                                <button type="button" @click="select(it)"
+                                        class="w-full text-left px-3.5 py-2.5 hover:bg-teal-50 hover:text-teal-900 transition flex justify-between items-center cursor-pointer">
+                                    <div>
+                                        <span class="font-bold text-slate-800 block text-xs" x-text="it.name"></span>
+                                        <span class="text-[11px] text-slate-400 block mt-0.5" x-text="it.extra"></span>
+                                    </div>
+                                    <span class="text-teal-600 font-bold ml-2 shrink-0" x-show="selectedId == it.id">✓ Terpilih</span>
+                                </button>
+                            </template>
+                        </div>
+                        <div x-show="open && search.trim() !== '' && filtered.length === 0"
+                             @click.outside="open = false"
+                             x-cloak
+                             class="absolute z-30 left-0 right-0 mt-1 p-3 bg-white border border-slate-200 rounded-xl shadow-lg text-xs text-slate-400 text-center">
+                            Produk tidak ditemukan. Silakan ketik nama lain.
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Cari Pemasok (Ketik Manual) -->
                 <div>
-                    <label for="supplier_id" class="block text-sm font-semibold text-slate-800 mb-1">Pemasok (Supplier) <span class="text-red-500">*</span></label>
-                    <select id="supplier_id" name="supplier_id" required
-                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900">
-                        <option value="">-- Pilih Pemasok --</option>
-                        @foreach($suppliers as $s)
-                            <option value="{{ $s->id }}" {{ old('supplier_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
-                        @endforeach
-                    </select>
+                    <label class="block text-sm font-semibold text-slate-800 mb-1">Pemasok (Supplier) <span class="text-red-500">*</span></label>
+                    <div x-data="{
+                        open: false,
+                        search: '',
+                        selectedId: '{{ old('supplier_id') }}',
+                        items: {{ json_encode($suppliers->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'extra' => $s->phone ? 'Telp: ' . $s->phone : ''])) }},
+                        init() {
+                            if (this.selectedId) {
+                                const found = this.items.find(i => i.id == this.selectedId);
+                                if (found) this.search = found.name;
+                            }
+                        },
+                        get filtered() {
+                            if (!this.search.trim()) return this.items.slice(0, 20);
+                            const q = this.search.toLowerCase();
+                            return this.items.filter(i => i.name.toLowerCase().includes(q) || i.extra.toLowerCase().includes(q)).slice(0, 20);
+                        },
+                        select(it) {
+                            this.selectedId = it.id;
+                            this.search = it.name;
+                            this.open = false;
+                        },
+                        clear() {
+                            this.selectedId = '';
+                            this.search = '';
+                            this.open = true;
+                        }
+                    }" class="relative">
+                        <input type="hidden" id="supplier_id" name="supplier_id" :value="selectedId" required>
+                        <div class="relative">
+                            <input type="text"
+                                   x-model="search"
+                                   @focus="open = true"
+                                   @click="open = true"
+                                   placeholder="Ketik manual nama pemasok / supplier..."
+                                   autocomplete="off"
+                                   required
+                                   class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900 pr-10">
+                            <button type="button" x-show="search.length > 0" @click="clear()"
+                                    class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
+                                &times;
+                            </button>
+                        </div>
+                        <div x-show="open && filtered.length > 0"
+                             @click.outside="open = false"
+                             x-cloak
+                             class="absolute z-30 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs">
+                            <template x-for="it in filtered" :key="it.id">
+                                <button type="button" @click="select(it)"
+                                        class="w-full text-left px-3.5 py-2.5 hover:bg-teal-50 hover:text-teal-900 transition flex justify-between items-center cursor-pointer">
+                                    <div>
+                                        <span class="font-bold text-slate-800 block text-xs" x-text="it.name"></span>
+                                        <span class="text-[11px] text-slate-400 block mt-0.5" x-show="it.extra" x-text="it.extra"></span>
+                                    </div>
+                                    <span class="text-teal-600 font-bold ml-2 shrink-0" x-show="selectedId == it.id">✓ Terpilih</span>
+                                </button>
+                            </template>
+                        </div>
+                        <div x-show="open && search.trim() !== '' && filtered.length === 0"
+                             @click.outside="open = false"
+                             x-cloak
+                             class="absolute z-30 left-0 right-0 mt-1 p-3 bg-white border border-slate-200 rounded-xl shadow-lg text-xs text-slate-400 text-center">
+                            Pemasok tidak ditemukan.
+                        </div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -78,4 +193,3 @@
         </div>
     </div>
 </x-app-layout>
-

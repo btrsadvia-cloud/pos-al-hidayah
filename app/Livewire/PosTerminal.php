@@ -66,6 +66,10 @@ class PosTerminal extends Component
     public int $qrisCooldownSeconds = 0;
     public bool $isCreatingQris = false;
 
+    // In-memory cache for fast POS interactions
+    public array $cachedCategories = [];
+    public array $cachedCustomers = [];
+
     public function mount()
     {
         $user = auth()->user();
@@ -73,6 +77,10 @@ class PosTerminal extends Component
             return redirect()->route('shift.index')
                 ->with('warning', 'Buka shift terlebih dahulu sebelum menggunakan POS.');
         }
+
+        $this->cachedCategories = \App\Models\Category::orderBy('name')->get()->toArray();
+        $this->cachedCustomers = Customer::orderBy('name')->get()->toArray();
+    }
     }
 
     public function performSearch()
@@ -156,7 +164,7 @@ class PosTerminal extends Component
             'subtotal'      => ((int) $priceInfo['price'] * $newQty) - (isset($this->cart[$productId]) ? $this->cart[$productId]['item_discount'] : 0),
         ];
 
-        $this->recalculateAllTiers();
+        // Tier price is already computed for $product, no need for redundant DB queries
         $this->recalculatePaymentDefaults();
     }
 
@@ -676,8 +684,8 @@ class PosTerminal extends Component
         }
 
         $products = $productQuery->orderBy('name')->limit(36)->get();
-        $categories = \App\Models\Category::orderBy('name')->get();
-        $customers = Customer::orderBy('name')->get();
+        $categories = !empty($this->cachedCategories) ? $this->cachedCategories : \App\Models\Category::orderBy('name')->get()->toArray();
+        $customers = !empty($this->cachedCustomers) ? $this->cachedCustomers : Customer::orderBy('name')->get()->toArray();
 
         return view('livewire.pos-terminal', [
             'products'           => $products,

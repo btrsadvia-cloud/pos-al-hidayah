@@ -151,9 +151,13 @@
                                     $isOut = $product->stock <= 0;
                                 @endphp
                                 <button type="button"
+                                        wire:key="product-card-{{ $product->id }}"
                                         wire:click="addToCart({{ $product->id }})"
+                                        x-data="{ clicking: false }"
+                                        @click="clicking = true; setTimeout(() => clicking = false, 120)"
+                                        :class="{ 'scale-95 bg-teal-50 border-teal-500': clicking }"
                                         {{ $isOut ? 'disabled' : '' }}
-                                        class="group p-2.5 rounded-xl border text-left transition flex flex-col justify-between cursor-pointer min-h-[110px] active:scale-95 select-none {{ $isOut ? 'opacity-50 bg-slate-50 border-slate-200 cursor-not-allowed' : 'bg-white hover:border-teal-500 hover:shadow-md border-slate-200' }}">
+                                        class="group p-2.5 rounded-xl border text-left transition-all duration-75 flex flex-col justify-between cursor-pointer min-h-[110px] select-none {{ $isOut ? 'opacity-50 bg-slate-50 border-slate-200 cursor-not-allowed' : 'bg-white hover:border-teal-500 hover:shadow-md border-slate-200' }}">
                                     <div>
                                         <div class="flex items-start justify-between gap-1 mb-1">
                                             <span class="text-[10px] font-mono text-slate-400">{{ $product->barcode ?: '-' }}</span>
@@ -227,7 +231,7 @@
                         </div>
                     @else
                         @foreach($cart as $productId => $item)
-                            <div class="py-2.5 flex flex-col space-y-1.5">
+                            <div wire:key="cart-row-{{ $productId }}" class="py-2.5 flex flex-col space-y-1.5">
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="flex-1 min-w-0">
                                         <h5 class="text-xs font-semibold text-slate-900 leading-tight truncate">
@@ -403,14 +407,67 @@
                         <!-- Customer Selection & Invoice Discount in 2 cols -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                                <label class="block font-semibold text-slate-700 mb-1">Pelanggan</label>
-                                <select wire:model.live="customerId"
-                                        class="w-full py-2.5 px-3 bg-slate-50 border border-slate-300 rounded-xl outline-none text-xs focus:ring-2 focus:ring-teal-500">
-                                    <option value="">-- Pelanggan Umum (Non-Member) --</option>
-                                    @foreach($customers as $c)
-                                        <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->phone ?: '-' }})</option>
-                                    @endforeach
-                                </select>
+                                <label class="block font-semibold text-slate-700 mb-1">Cari Pelanggan (Ketik Nama / No. HP)</label>
+                                <div x-data="{
+                                    open: false,
+                                    search: '',
+                                    selectedId: @entangle('customerId'),
+                                    customers: {{ json_encode($customers) }},
+                                    init() {
+                                        if (this.selectedId) {
+                                            const found = this.customers.find(c => c.id == this.selectedId);
+                                            if (found) this.search = found.name;
+                                        }
+                                    },
+                                    get filtered() {
+                                        if (!this.search.trim()) return this.customers.slice(0, 15);
+                                        const q = this.search.toLowerCase();
+                                        return this.customers.filter(c => c.name.toLowerCase().includes(q) || (c.phone && c.phone.includes(q))).slice(0, 15);
+                                    },
+                                    select(c) {
+                                        this.selectedId = c.id;
+                                        this.search = c.name + (c.phone ? ' (' + c.phone + ')' : '');
+                                        this.open = false;
+                                    },
+                                    clear() {
+                                        this.selectedId = null;
+                                        this.search = '';
+                                        this.open = true;
+                                    }
+                                }" class="relative">
+                                    <div class="relative">
+                                        <input type="text"
+                                               x-model="search"
+                                               @focus="open = true"
+                                               @click="open = true"
+                                               placeholder="Ketik manual nama / HP pelanggan..."
+                                               autocomplete="off"
+                                               class="w-full py-2.5 px-3 bg-slate-50 border border-slate-300 rounded-xl outline-none text-xs focus:ring-2 focus:ring-teal-500 pr-8">
+                                        <button type="button" x-show="search.length > 0" @click="clear()"
+                                                class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
+                                            &times;
+                                        </button>
+                                    </div>
+                                    <div x-show="open && filtered.length > 0"
+                                         @click.outside="open = false"
+                                         x-cloak
+                                         class="absolute z-30 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs">
+                                        <button type="button" @click="clear(); open = false"
+                                                class="w-full text-left px-3 py-2 text-slate-500 italic hover:bg-slate-50 font-medium cursor-pointer">
+                                            -- Pelanggan Umum (Non-Member) --
+                                        </button>
+                                        <template x-for="c in filtered" :key="c.id">
+                                            <button type="button" @click="select(c)"
+                                                    class="w-full text-left px-3 py-2 hover:bg-teal-50 hover:text-teal-900 transition flex justify-between items-center cursor-pointer">
+                                                <div>
+                                                    <span class="font-bold text-slate-800 text-xs" x-text="c.name"></span>
+                                                    <span class="text-[10px] text-slate-400 block" x-show="c.phone" x-text="'HP: ' + c.phone"></span>
+                                                </div>
+                                                <span class="text-teal-600 font-bold ml-2 shrink-0" x-show="selectedId == c.id">✓ Terpilih</span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
 
                             <div>
@@ -568,131 +625,124 @@
                     return `${m}:${s}`;
                 }
              }"
-             class="fixed inset-0 bg-slate-900/75 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto" x-cloak>
-            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative text-center my-8">
+             class="fixed inset-0 bg-slate-900/75 backdrop-blur-xs z-50 flex items-center justify-center p-3 overflow-y-auto" x-cloak>
+            <div class="bg-white rounded-2xl max-w-xs sm:max-w-sm w-full p-4 shadow-2xl border border-slate-200 relative text-center my-4">
                 <!-- Header -->
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
                     <div class="flex items-center space-x-2 text-left">
-                        <div class="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                             </svg>
                         </div>
                         <div>
-                            <h4 class="font-bold text-sm text-slate-900">QRIS Toko Al-Hidayah</h4>
-                            <p class="text-[11px] text-slate-400 font-mono">ID: {{ $qrisTransactionId }}</p>
+                            <h4 class="font-bold text-xs text-slate-900">QRIS Toko Al-Hidayah</h4>
+                            <p class="text-[10px] text-slate-400 font-mono">ID: {{ $qrisTransactionId }}</p>
                         </div>
                     </div>
                     <button type="button" wire:click="cancelQrisPayment"
-                            class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
                 <!-- 5-Minute Expiry Countdown Pill -->
-                <div class="mt-3 inline-flex items-center space-x-1.5 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-full text-xs font-semibold">
-                    <svg class="w-3.5 h-3.5 text-amber-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                <div class="mt-2.5 inline-flex items-center space-x-1 px-2.5 py-0.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-full text-[11px] font-semibold">
+                    <svg class="w-3 h-3 text-amber-600 animate-spin" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                     </svg>
-                    <span>Sisa Waktu QRIS: <strong class="font-mono text-sm" x-text="formattedTime">05:00</strong> (Maks. 5 Menit)</span>
+                    <span>Sisa Waktu: <strong class="font-mono" x-text="formattedTime">05:00</strong> (5 Menit)</span>
                 </div>
 
-                <!-- Total Amount Banner -->
-                <div class="mt-3 p-3 bg-gradient-to-r from-teal-700 to-teal-800 text-white rounded-2xl shadow-sm">
-                    <span class="text-[11px] text-teal-200 block uppercase tracking-wider font-semibold">Total yang Harus Dibayar:</span>
-                    <span class="text-3xl font-black tracking-tight block my-0.5">
+                <!-- Total Amount Banner (COMPACT) -->
+                <div class="mt-2.5 p-2.5 bg-gradient-to-r from-teal-700 to-teal-800 text-white rounded-xl shadow-xs">
+                    <span class="text-[10px] text-teal-200 block uppercase tracking-wider font-semibold">Total Tagihan:</span>
+                    <span class="text-xl font-black tracking-tight block my-0.5">
                         {{ format_rupiah($qrisTotalAmount) }}
                     </span>
                     @if($qrisAmountUniq > 0)
-                        <span class="text-[11px] text-teal-100 block font-medium">
-                            (Termasuk kode unik <strong>Rp {{ $qrisAmountUniq }}</strong> untuk verifikasi instan)
+                        <span class="text-[10px] text-teal-100 block font-medium">
+                            (Kode unik: <strong>Rp {{ $qrisAmountUniq }}</strong>)
                         </span>
                     @endif
                 </div>
 
-                <!-- QR Code Display -->
-                <div class="my-4">
-                    <div class="inline-block p-3 bg-white rounded-2xl border-2 border-teal-500 shadow-md">
+                <!-- QR Code Display (COMPACT 144x144 px) -->
+                <div class="my-3">
+                    <div class="inline-block p-2 bg-white rounded-xl border border-teal-500 shadow-sm">
                         @if(!empty($qrisImage))
-                            <img src="{{ $qrisImage }}" alt="QRIS Code" class="w-60 h-60 mx-auto object-contain rounded-lg">
+                            <img src="{{ $qrisImage }}" alt="QRIS Code" class="w-36 h-36 mx-auto object-contain rounded">
                         @elseif(!empty($qrisQrUrl))
-                            <img src="{{ $qrisQrUrl }}" alt="QRIS Code" class="w-60 h-60 mx-auto object-contain rounded-lg">
+                            <img src="{{ $qrisQrUrl }}" alt="QRIS Code" class="w-36 h-36 mx-auto object-contain rounded">
                         @else
-                            <div class="w-60 h-60 flex items-center justify-center text-slate-400 text-xs">
+                            <div class="w-36 h-36 flex items-center justify-center text-slate-400 text-[11px]">
                                 Memuat QR Code...
                             </div>
                         @endif
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-2">
-                        Scan dengan <strong>BCA, BRI, Mandiri, BNI, GoPay, OVO, DANA, ShopeePay</strong>, dll
+                    <p class="text-[10px] text-slate-500 mt-1">
+                        Scan via BCA, BRI, Mandiri, GoPay, DANA, OVO, dll
                     </p>
                 </div>
 
                 <!-- Live Status Indicator -->
-                <div class="space-y-2 mb-5">
+                <div class="space-y-1.5 mb-3 text-xs">
                     @if($qrisStatus === 'success')
-                        <div class="py-2.5 px-3 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-xl text-xs font-bold flex items-center justify-center space-x-2">
-                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="py-1.5 px-2 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                            <span>Pembayaran Lunas! Menyimpan transaksi...</span>
+                            <span>Lunas! Menyimpan...</span>
                         </div>
                     @elseif($qrisStatus === 'expired')
-                        <div class="py-2 px-3 bg-red-50 border border-red-300 text-red-700 rounded-xl text-xs font-semibold">
-                            QRIS telah kedaluwarsa (batas 5 menit). Silakan batalkan dan buat baru.
+                        <div class="py-1.5 px-2 bg-red-50 border border-red-300 text-red-700 rounded-lg text-xs font-semibold">
+                            QRIS kedaluwarsa. Silakan buat ulang.
                         </div>
                     @elseif($qrisStatus === 'failed')
-                        <div class="py-2 px-3 bg-red-50 border border-red-300 text-red-700 rounded-xl text-xs font-semibold">
-                            Pembayaran QRIS gagal atau dibatalkan.
+                        <div class="py-1.5 px-2 bg-red-50 border border-red-300 text-red-700 rounded-lg text-xs font-semibold">
+                            Pembayaran QRIS gagal.
                         </div>
                     @else
-                        <div class="py-2 px-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2 animate-pulse">
-                            <svg class="w-4 h-4 animate-spin text-amber-600" fill="none" viewBox="0 0 24 24">
+                        <div class="py-1.5 px-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-[11px] font-semibold flex items-center justify-center space-x-1.5 animate-pulse">
+                            <svg class="w-3.5 h-3.5 animate-spin text-amber-600" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                             </svg>
                             <span>Menunggu pembayaran pelanggan...</span>
                         </div>
                     @endif
-
-                    @if(!empty($qrisStatusMessage))
-                        <p class="text-xs text-slate-600 font-medium px-2">
-                            {{ $qrisStatusMessage }}
-                        </p>
-                    @endif
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="space-y-2">
+                <div class="space-y-1.5">
                     <button type="button" wire:click="checkQrisStatus"
                             wire:loading.attr="disabled"
-                            class="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-bold rounded-xl transition flex items-center justify-center space-x-2 cursor-pointer shadow-sm disabled:opacity-50">
+                            class="w-full py-2.5 px-3 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-bold rounded-xl transition flex items-center justify-center space-x-1.5 cursor-pointer text-xs shadow-xs disabled:opacity-50">
                         <span wire:loading.remove wire:target="checkQrisStatus">
                             🔍 CEK STATUS SEKARANG
                         </span>
-                        <span wire:loading wire:target="checkQrisStatus" class="flex items-center space-x-1.5">
-                            <svg class="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                        <span wire:loading wire:target="checkQrisStatus" class="flex items-center space-x-1">
+                            <svg class="w-3.5 h-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                             </svg>
-                            <span>Memeriksa status pembayaran...</span>
+                            <span>Memeriksa...</span>
                         </span>
                     </button>
 
                     @if(config('buatqris.test_mode') || app()->environment('local'))
-                        <!-- Development Testing Button -->
                         <button type="button" wire:click="simulateSuccessQris"
-                                class="w-full py-2 px-3 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl text-xs transition cursor-pointer border border-amber-300 flex items-center justify-center space-x-1">
-                            <span>⚡ Simulasi Bayar Lunas (Mode Testing)</span>
+                                class="w-full py-1.5 px-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl text-[11px] transition cursor-pointer border border-amber-300">
+                            ⚡ Simulasi Bayar Lunas (Testing)
                         </button>
                     @endif
 
                     <button type="button" wire:click="cancelQrisPayment"
-                            class="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition cursor-pointer">
-                        Batal / Ganti Metode Pembayaran
+                            class="w-full py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-[11px] transition cursor-pointer">
+                        Batal / Ganti Metode Bayar
                     </button>
                 </div>
             </div>

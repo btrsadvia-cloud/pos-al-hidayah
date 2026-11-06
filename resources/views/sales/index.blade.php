@@ -24,23 +24,53 @@
                 @can('admin')
                     <div class="sm:col-span-2">
                         <label class="block font-medium text-slate-600 mb-1">Kasir</label>
-                        <select name="user_id" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white text-xs">
-                            <option value="">Semua Kasir</option>
-                            @foreach($cashiers as $ck)
-                                <option value="{{ $ck->id }}" {{ request('user_id') == $ck->id ? 'selected' : '' }}>{{ $ck->name }}</option>
-                            @endforeach
-                        </select>
+                        <div x-data="{
+                            open: false,
+                            search: '',
+                            selectedId: '{{ request('user_id') }}',
+                            items: {{ json_encode($cashiers->map(fn($c) => ['id' => $c->id, 'name' => $c->name])) }},
+                            init() {
+                                if (this.selectedId) {
+                                    const found = this.items.find(i => i.id == this.selectedId);
+                                    if (found) this.search = found.name;
+                                }
+                            },
+                            get filtered() {
+                                if (!this.search.trim()) return this.items;
+                                const q = this.search.toLowerCase();
+                                return this.items.filter(i => i.name.toLowerCase().includes(q));
+                            },
+                            select(it) { this.selectedId = it.id; this.search = it.name; this.open = false; },
+                            clear() { this.selectedId = ''; this.search = ''; this.open = true; }
+                        }" class="relative">
+                            <input type="hidden" name="user_id" :value="selectedId">
+                            <div class="relative">
+                                <input type="text" x-model="search" @focus="open = true" @click="open = true" placeholder="Ketik nama kasir..." autocomplete="off"
+                                       class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 text-xs pr-8">
+                                <button type="button" x-show="search.length > 0" @click="clear()" class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-xs font-bold cursor-pointer">&times;</button>
+                            </div>
+                            <div x-show="open && filtered.length > 0" @click.outside="open = false" x-cloak
+                                 class="absolute z-30 left-0 right-0 mt-1 max-h-44 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs">
+                                <template x-for="it in filtered" :key="it.id">
+                                    <button type="button" @click="select(it)" class="w-full text-left px-3 py-2 hover:bg-teal-50 transition cursor-pointer flex justify-between items-center">
+                                        <span class="font-semibold text-slate-800" x-text="it.name"></span>
+                                        <span class="text-teal-600 font-bold text-[10px]" x-show="selectedId == it.id">✓</span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
                     </div>
                 @endcan
 
                 <div class="sm:col-span-2">
                     <label class="block font-medium text-slate-600 mb-1">Metode Bayar</label>
-                    <select name="payment_method" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white text-xs">
-                        <option value="">Semua Metode</option>
-                        <option value="cash" {{ request('payment_method') === 'cash' ? 'selected' : '' }}>Tunai</option>
-                        <option value="qris" {{ request('payment_method') === 'qris' ? 'selected' : '' }}>QRIS</option>
-                        <option value="transfer" {{ request('payment_method') === 'transfer' ? 'selected' : '' }}>Transfer</option>
-                    </select>
+                    <div class="flex items-center space-x-1" x-data="{ method: '{{ request('payment_method') }}' }">
+                        <input type="hidden" name="payment_method" :value="method">
+                        <button type="button" @click="method = ''" :class="method === '' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-1.5 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">Semua</button>
+                        <button type="button" @click="method = 'cash'" :class="method === 'cash' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-1.5 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">Tunai</button>
+                        <button type="button" @click="method = 'qris'" :class="method === 'qris' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-1.5 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">QRIS</button>
+                        <button type="button" @click="method = 'transfer'" :class="method === 'transfer' ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-1.5 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">Transfer</button>
+                    </div>
                 </div>
 
                 <div class="sm:col-span-2">

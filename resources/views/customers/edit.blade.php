@@ -18,13 +18,13 @@
                 </div>
 
                 <div>
-                    <label for="gender" class="block text-sm font-semibold text-slate-800 mb-1">Jenis Kelamin</label>
-                    <select id="gender" name="gender"
-                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900">
-                        <option value="">-- Pilih (Opsional) --</option>
-                        <option value="P" {{ old('gender', $customer->gender) === 'P' ? 'selected' : '' }}>Perempuan</option>
-                        <option value="L" {{ old('gender', $customer->gender) === 'L' ? 'selected' : '' }}>Laki-laki</option>
-                    </select>
+                    <label class="block text-sm font-semibold text-slate-800 mb-1">Jenis Kelamin</label>
+                    <div class="flex items-center space-x-2" x-data="{ gender: '{{ old('gender', $customer->gender ?? '') }}' }">
+                        <input type="hidden" name="gender" :value="gender">
+                        <button type="button" @click="gender = ''" :class="gender === '' ? 'bg-teal-600 text-white border-teal-600 shadow-sm' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-3 py-2.5 rounded-xl border text-sm font-semibold transition cursor-pointer">Tidak Dipilih</button>
+                        <button type="button" @click="gender = 'P'" :class="gender === 'P' ? 'bg-teal-600 text-white border-teal-600 shadow-sm' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-3 py-2.5 rounded-xl border text-sm font-semibold transition cursor-pointer">Perempuan</button>
+                        <button type="button" @click="gender = 'L'" :class="gender === 'L' ? 'bg-teal-600 text-white border-teal-600 shadow-sm' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-3 py-2.5 rounded-xl border text-sm font-semibold transition cursor-pointer">Laki-laki</button>
+                    </div>
                 </div>
 
                 <div>
