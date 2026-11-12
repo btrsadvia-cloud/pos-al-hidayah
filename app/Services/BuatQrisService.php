@@ -32,16 +32,19 @@ class BuatQrisService
     }
 
     /**
-     * Build HTTP client with SSL CA bundle support for Windows environments.
+     * Build HTTP client with SSL CA bundle support and IPv4 forcing for Windows environments.
      */
     protected function newHttpClient()
     {
         $caBundle = storage_path('cacert.pem');
-        $client = Http::asForm()->timeout(15);
+        $options = [
+            'connect_timeout'  => 8,
+            'force_ip_resolve' => 'v4',
+        ];
         if (file_exists($caBundle)) {
-            $client = $client->withOptions(['verify' => $caBundle]);
+            $options['verify'] = $caBundle;
         }
-        return $client;
+        return Http::asForm()->timeout(15)->withOptions($options);
     }
 
     /**
