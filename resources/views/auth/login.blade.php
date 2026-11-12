@@ -175,11 +175,13 @@
         document.addEventListener('DOMContentLoaded', function () {
             var form = document.querySelector('form');
             if (form) {
-                form.addEventListener('submit', function () {
+                form.addEventListener('submit', function (e) {
+                    if (form.checkValidity && !form.checkValidity()) {
+                        return; // Field required error, do not show overlay
+                    }
                     var overlay = document.getElementById('login-success-overlay');
                     if (overlay) {
                         overlay.style.display = 'flex';
-                        // Trigger entrance animation
                         setTimeout(function () {
                             overlay.classList.add('overlay-visible');
                         }, 10);
@@ -208,11 +210,11 @@
             </svg>
         </div>
 
-        <!-- Welcome text -->
+        <!-- Welcome text (No waving emoji, clean and professional) -->
         <div style="text-align:center; color:white; animation: textSlideUp 0.5s ease 0.4s both;">
             <div style="font-size:13px; font-weight:600; color:rgba(251,191,36,0.9); letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Toko Al-Hidayah</div>
-            <div style="font-size:28px; font-weight:900; letter-spacing:-0.5px; margin-bottom:4px;">Selamat Datang! 👋</div>
-            <div style="font-size:14px; color:rgba(255,255,255,0.7);">Memuat sistem kasir...</div>
+            <div style="font-size:28px; font-weight:900; letter-spacing:-0.5px; margin-bottom:4px;">Selamat Datang</div>
+            <div style="font-size:14px; color:rgba(255,255,255,0.7);">Memuat sistem...</div>
         </div>
 
         <!-- Bouncing dots loader -->

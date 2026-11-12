@@ -1,4 +1,4 @@
-﻿<div class="h-[calc(100vh-6rem)] flex flex-col"
+<div class="h-[calc(100vh-6rem)] flex flex-col"
      x-data="{
         isOnline: navigator.onLine,
         init() {

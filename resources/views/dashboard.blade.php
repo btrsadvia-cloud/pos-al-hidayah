@@ -405,6 +405,5 @@
                 </div>
             </div>
         @endcan
-        @endcan
     </div>
 </x-app-layout>
