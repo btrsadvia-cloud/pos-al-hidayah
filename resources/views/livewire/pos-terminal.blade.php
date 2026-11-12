@@ -320,7 +320,7 @@
                     <button type="button" id="btn-to-payment"
                             wire:click="proceedToPayment"
                             {{ count($cart) === 0 ? 'disabled' : '' }}
-                            class="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-700 active:scale-98 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition flex items-center justify-center space-x-2 cursor-pointer min-h-[48px]">
+                            class="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-700 active:scale-98 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer min-h-[48px] animate-shimmer-btn">
                         <span>LANJUT KE PEMBAYARAN &rarr; (F9)</span>
                     </button>
                 </div>
@@ -580,7 +580,7 @@
                         <button type="button" id="btn-checkout"
                                 wire:click="checkout"
                                 :disabled="!isOnline || {{ count($cart) === 0 ? 'true' : 'false' }}"
-                                class="flex-1 py-3.5 px-4 bg-teal-600 hover:bg-teal-700 active:scale-98 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition flex items-center justify-center space-x-2 cursor-pointer min-h-[48px]">
+                                class="flex-1 py-3.5 px-4 bg-teal-600 hover:bg-teal-700 active:scale-98 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer min-h-[48px] animate-shimmer-btn">
                             <span wire:loading.remove wire:target="checkout">
                                 @if($paymentMethod === 'qris')
                                     📱 BUAT KODE QRIS (F9)

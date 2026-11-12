@@ -2,20 +2,20 @@
     <div class="space-y-6">
 
         <!-- Top Greeting Banner -->
-        <div class="relative overflow-hidden bg-gradient-to-r from-teal-800 via-teal-700 to-emerald-800 rounded-3xl p-6 sm:p-8 text-white shadow-lg">
+        <div class="relative overflow-hidden bg-gradient-to-r from-[#70102e] via-[#881337] to-[#5c0d26] rounded-3xl p-6 sm:p-8 text-white shadow-xl animate-fade-up">
             <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
-            <div class="absolute right-20 -top-10 w-48 h-48 bg-teal-400/10 rounded-full blur-xl pointer-events-none"></div>
+            <div class="absolute right-20 -top-10 w-48 h-48 bg-rose-400/10 rounded-full blur-xl pointer-events-none animate-pulse-glow"></div>
 
             <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                 <div>
-                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-xs text-teal-100 text-xs font-semibold mb-3">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs text-rose-100 text-xs font-semibold mb-3 border border-white/10">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
                         <span>Sistem Kasir Aktif &bull; {{ now()->translatedFormat('l, d F Y') }}</span>
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
                         Assalamu'alaikum, {{ auth()->user()->name }}! 👋
                     </h1>
-                    <p class="text-teal-100/90 text-sm mt-1 max-w-xl">
+                    <p class="text-rose-100/90 text-sm mt-1 max-w-xl">
                         Selamat bertugas di <strong class="text-white">Toko Al-Hidayah</strong>.
                         Anda masuk sebagai <span class="px-2 py-0.5 rounded bg-white/20 font-semibold">{{ auth()->user()->isAdmin() ? 'Administrator & Pemilik' : 'Kasir Toko' }}</span>.
                     </p>
@@ -24,8 +24,8 @@
                 <!-- Quick Action Buttons -->
                 <div class="flex flex-wrap items-center gap-2.5 shrink-0">
                     <a href="{{ route('pos.index') }}"
-                       class="inline-flex items-center space-x-2 bg-white text-teal-800 hover:bg-teal-50 px-5 py-3 rounded-2xl text-sm font-bold shadow-md hover:shadow-lg transition cursor-pointer min-h-[44px]">
-                        <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="inline-flex items-center space-x-2 bg-white text-[#881337] hover:bg-rose-50 px-5 py-3 rounded-2xl text-sm font-bold shadow-lg hover:shadow-xl active:scale-95 transition-all duration-150 cursor-pointer min-h-[44px] animate-shimmer-btn">
+                        <svg class="w-5 h-5 text-[#881337]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                         </svg>
                         <span>Buka Kasir (POS)</span>
@@ -33,11 +33,11 @@
 
                     @can('admin')
                         <a href="{{ route('products.create') }}"
-                           class="inline-flex items-center space-x-1.5 bg-teal-600/80 hover:bg-teal-600 text-white border border-teal-500/50 px-3.5 py-2.5 rounded-2xl text-xs font-semibold backdrop-blur-xs transition cursor-pointer min-h-[44px]">
+                           class="inline-flex items-center space-x-1.5 bg-white/15 hover:bg-white/25 text-white border border-white/20 px-3.5 py-2.5 rounded-2xl text-xs font-semibold backdrop-blur-xs transition cursor-pointer min-h-[44px]">
                             <span>+ Produk Baru</span>
                         </a>
                         <a href="{{ route('inventory.stock-in') }}"
-                           class="inline-flex items-center space-x-1.5 bg-teal-600/80 hover:bg-teal-600 text-white border border-teal-500/50 px-3.5 py-2.5 rounded-2xl text-xs font-semibold backdrop-blur-xs transition cursor-pointer min-h-[44px]">
+                           class="inline-flex items-center space-x-1.5 bg-white/15 hover:bg-white/25 text-white border border-white/20 px-3.5 py-2.5 rounded-2xl text-xs font-semibold backdrop-blur-xs transition cursor-pointer min-h-[44px]">
                             <span>+ Stok Masuk</span>
                         </a>
                     @endcan
@@ -54,7 +54,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
 
             <!-- Omzet Hari Ini -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover:border-teal-300 transition flex flex-col justify-between">
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs hover-lift transition flex flex-col justify-between">
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Omzet Hari Ini</span>
                     <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">

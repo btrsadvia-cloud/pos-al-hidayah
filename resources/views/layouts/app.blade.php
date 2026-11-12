@@ -29,13 +29,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-                <a href="{{ route('dashboard') }}" class="flex items-center space-x-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+                <a href="{{ route('dashboard') }}" class="flex items-center space-x-2.5 group">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#881337] to-[#5c0d26] text-white flex items-center justify-center font-black text-sm shadow-md ring-2 ring-rose-200/50 group-hover:scale-105 transition-transform duration-200">
                         AH
                     </div>
                     <div class="hidden sm:block">
-                        <span class="font-bold text-slate-900 text-base leading-tight block">Toko Al-Hidayah</span>
-                        <span class="text-[11px] text-teal-700 font-medium block">Busana Muslimah & Perlengkapan Ibadah</span>
+                        <span class="font-bold text-slate-900 text-base leading-tight block group-hover:text-[#881337] transition-colors">Toko Al-Hidayah</span>
+                        <span class="text-[11px] text-[#881337] font-semibold block">Busana Muslimah &amp; Perlengkapan Ibadah</span>
                     </div>
                 </a>
             </div>
@@ -56,7 +56,7 @@
 
                 <!-- POS Shortcut Button -->
                 <a href="{{ route('pos.index') }}"
-                   class="hidden sm:inline-flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-xs transition min-h-[38px]">
+                   class="hidden sm:inline-flex items-center space-x-1.5 bg-gradient-to-r from-[#881337] to-[#70102e] hover:from-[#70102e] hover:to-[#5c0d26] active:scale-95 text-white px-3.5 py-1.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow-md transition-all duration-150 min-h-[38px] animate-shimmer-btn">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>

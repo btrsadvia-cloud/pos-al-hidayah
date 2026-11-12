@@ -81,7 +81,6 @@ class PosTerminal extends Component
         $this->cachedCategories = \App\Models\Category::orderBy('name')->get()->toArray();
         $this->cachedCustomers = Customer::orderBy('name')->get()->toArray();
     }
-    }
 
     public function performSearch()
     {
