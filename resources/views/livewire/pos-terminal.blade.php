@@ -318,7 +318,7 @@
                                         <!-- Diskon per item -->
                                         <div class="flex items-center space-x-1 text-[11px] text-slate-500" title="Diskon Item (Rp)">
                                             <span>Disc:</span>
-                                            <input type="number" min="0" step="500"
+                                            <input type="number" min="0" step="1"
                                                    value="{{ $item['item_discount'] ?? 0 }}"
                                                    wire:change="updateItemDiscount({{ $productId }}, $event.target.value)"
                                                    class="w-16 py-0.5 px-1 bg-slate-50 border border-slate-200 rounded text-right text-[11px] font-mono outline-none focus:bg-white">
@@ -529,7 +529,7 @@
                                         <span class="text-[10px] text-slate-400">Maks. 10%</span>
                                     @endif
                                 </div>
-                                <input type="number" min="0" step="500" id="invoice-discount-input"
+                                <input type="number" min="0" step="1" id="invoice-discount-input"
                                        wire:model.live.debounce.400ms="invoiceDiscount"
                                        class="w-full py-2.5 px-3 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs focus:ring-2 focus:ring-[#881337] outline-none">
                             </div>
@@ -563,7 +563,7 @@
                                         Uang Pas ({{ format_rupiah($total) }})
                                     </button>
                                 </div>
-                                <input type="number" min="0" step="100"
+                                <input type="number" min="0" step="1"
                                        wire:model.live.debounce.250ms="paidAmount"
                                        class="w-full py-3 px-3.5 bg-white border border-slate-300 rounded-xl font-mono text-base font-bold focus:ring-2 focus:ring-[#881337] outline-none">
 

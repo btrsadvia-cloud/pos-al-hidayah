@@ -36,7 +36,7 @@
                         <p class="text-xs text-slate-500 mb-2">
                             Hitung seluruh uang fisik (modal awal + penerimaan tunai hari ini) lalu masukkan nominalnya di bawah ini:
                         </p>
-                        <input type="number" id="counted_cash" name="counted_cash" required min="0" step="500"
+                        <input type="number" id="counted_cash" name="counted_cash" required min="0" step="1"
                                placeholder="Contoh: 1500000"
                                class="w-full max-w-md px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] font-mono text-base font-bold text-slate-900 outline-none">
                     </div>
@@ -75,7 +75,7 @@
                         <label for="opening_cash" class="block text-sm font-semibold text-slate-800 mb-1">
                             Kas Awal (Modal Uang Kembalian di Laci Kasir)
                         </label>
-                        <input type="number" id="opening_cash" name="opening_cash" required min="0" step="500"
+                        <input type="number" id="opening_cash" name="opening_cash" required min="0" step="1"
                                placeholder="Contoh: 200000"
                                class="w-full max-w-md px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] font-mono text-base font-bold text-slate-900 outline-none">
                     </div>

@@ -36,18 +36,27 @@
                             this.search = it.name;
                             this.open = false;
                         },
+                        checkAuto() {
+                            const q = this.search.trim().toLowerCase();
+                            if (!q) { this.selectedId = ''; return; }
+                            const match = this.items.find(i => i.name.toLowerCase() === q);
+                            if (match) { this.selectedId = match.id; }
+                            else if (this.filtered.length === 1) { this.selectedId = this.filtered[0].id; }
+                        },
                         clear() {
                             this.selectedId = '';
                             this.search = '';
                             this.open = true;
                         }
                     }" class="relative">
-                        <input type="hidden" id="product_id" name="product_id" :value="selectedId" required>
+                        <input type="hidden" id="product_id" name="product_id" :value="selectedId">
                         <div class="relative">
                             <input type="text"
                                    x-model="search"
                                    @focus="open = true"
                                    @click="open = true"
+                                   @input="checkAuto()"
+                                   @keydown.enter.prevent="if (filtered.length > 0) { select(filtered[0]); }"
                                    placeholder="Ketik manual nama atau barcode produk..."
                                    autocomplete="off"
                                    required
@@ -56,6 +65,10 @@
                                     class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
                                 &times;
                             </button>
+                        </div>
+                        <div x-show="selectedId" class="mt-1 text-xs text-emerald-700 font-semibold flex items-center space-x-1">
+                            <span>✓ Produk terpilih:</span>
+                            <span class="font-bold" x-text="items.find(i => i.id == selectedId)?.name"></span>
                         </div>
                         <div x-show="open && filtered.length > 0"
                              @click.outside="open = false"

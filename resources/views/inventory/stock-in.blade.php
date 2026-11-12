@@ -9,7 +9,23 @@
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-            <form method="POST" action="{{ route('inventory.stock-in.store') }}" class="space-y-4">
+            @if ($errors->any())
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
+                    <ul class="list-disc list-inside space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('inventory.stock-in.store') }}" class="space-y-4"
+                  onsubmit="const pid = document.getElementById('product_id').value; const sid = document.getElementById('supplier_id').value; if (!pid) { alert('Silakan pilih produk dari daftar terlebih dahulu.'); return false; } if (!sid) { alert('Silakan pilih pemasok dari daftar terlebih dahulu.'); return false; }">
                 @csrf
 
                 <!-- Cari Produk (Ketik Manual) -->
@@ -29,12 +45,19 @@
                         get filtered() {
                             if (!this.search.trim()) return this.items.slice(0, 20);
                             const q = this.search.toLowerCase();
-                            return this.items.filter(i => i.name.toLowerCase().includes(q) || i.extra.toLowerCase().includes(q)).slice(0, 20);
+                            return this.items.filter(i => i.name.toLowerCase().includes(q) || (i.extra && i.extra.toLowerCase().includes(q))).slice(0, 20);
                         },
                         select(it) {
                             this.selectedId = it.id;
                             this.search = it.name;
                             this.open = false;
+                        },
+                        checkAuto() {
+                            const q = this.search.trim().toLowerCase();
+                            if (!q) { this.selectedId = ''; return; }
+                            const match = this.items.find(i => i.name.toLowerCase() === q);
+                            if (match) { this.selectedId = match.id; }
+                            else if (this.filtered.length === 1) { this.selectedId = this.filtered[0].id; }
                         },
                         clear() {
                             this.selectedId = '';
@@ -42,12 +65,14 @@
                             this.open = true;
                         }
                     }" class="relative">
-                        <input type="hidden" id="product_id" name="product_id" :value="selectedId" required>
+                        <input type="hidden" id="product_id" name="product_id" :value="selectedId">
                         <div class="relative">
                             <input type="text"
                                    x-model="search"
                                    @focus="open = true"
                                    @click="open = true"
+                                   @input="checkAuto()"
+                                   @keydown.enter.prevent="if (filtered.length > 0) { select(filtered[0]); }"
                                    placeholder="Ketik manual nama atau barcode produk..."
                                    autocomplete="off"
                                    required
@@ -57,8 +82,12 @@
                                 &times;
                             </button>
                         </div>
+                        <div x-show="selectedId" class="mt-1 text-xs text-emerald-700 font-semibold flex items-center space-x-1">
+                            <span>✓ Produk terpilih:</span>
+                            <span class="font-bold" x-text="items.find(i => i.id == selectedId)?.name"></span>
+                        </div>
                         <div x-show="open && filtered.length > 0"
-                             @click.outside="open = false"
+                             @click.outside="open = false; checkAuto();"
                              x-cloak
                              class="absolute z-30 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs">
                             <template x-for="it in filtered" :key="it.id">
@@ -98,12 +127,19 @@
                         get filtered() {
                             if (!this.search.trim()) return this.items.slice(0, 20);
                             const q = this.search.toLowerCase();
-                            return this.items.filter(i => i.name.toLowerCase().includes(q) || i.extra.toLowerCase().includes(q)).slice(0, 20);
+                            return this.items.filter(i => i.name.toLowerCase().includes(q) || (i.extra && i.extra.toLowerCase().includes(q))).slice(0, 20);
                         },
                         select(it) {
                             this.selectedId = it.id;
                             this.search = it.name;
                             this.open = false;
+                        },
+                        checkAuto() {
+                            const q = this.search.trim().toLowerCase();
+                            if (!q) { this.selectedId = ''; return; }
+                            const match = this.items.find(i => i.name.toLowerCase() === q);
+                            if (match) { this.selectedId = match.id; }
+                            else if (this.filtered.length === 1) { this.selectedId = this.filtered[0].id; }
                         },
                         clear() {
                             this.selectedId = '';
@@ -111,12 +147,14 @@
                             this.open = true;
                         }
                     }" class="relative">
-                        <input type="hidden" id="supplier_id" name="supplier_id" :value="selectedId" required>
+                        <input type="hidden" id="supplier_id" name="supplier_id" :value="selectedId">
                         <div class="relative">
                             <input type="text"
                                    x-model="search"
                                    @focus="open = true"
                                    @click="open = true"
+                                   @input="checkAuto()"
+                                   @keydown.enter.prevent="if (filtered.length > 0) { select(filtered[0]); }"
                                    placeholder="Ketik manual nama pemasok / supplier..."
                                    autocomplete="off"
                                    required
@@ -126,8 +164,12 @@
                                 &times;
                             </button>
                         </div>
+                        <div x-show="selectedId" class="mt-1 text-xs text-emerald-700 font-semibold flex items-center space-x-1">
+                            <span>✓ Pemasok terpilih:</span>
+                            <span class="font-bold" x-text="items.find(i => i.id == selectedId)?.name"></span>
+                        </div>
                         <div x-show="open && filtered.length > 0"
-                             @click.outside="open = false"
+                             @click.outside="open = false; checkAuto();"
                              x-cloak
                              class="absolute z-30 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs">
                             <template x-for="it in filtered" :key="it.id">
@@ -153,14 +195,14 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label for="quantity" class="block text-sm font-semibold text-slate-800 mb-1">Jumlah Masuk <span class="text-red-500">*</span></label>
-                        <input type="number" id="quantity" name="quantity" value="{{ old('quantity') }}" required min="1"
+                        <input type="number" id="quantity" name="quantity" value="{{ old('quantity') }}" required min="1" step="1"
                                placeholder="Contoh: 50"
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] font-mono text-sm text-slate-900 outline-none">
                     </div>
 
                     <div>
                         <label for="unit_cost" class="block text-sm font-semibold text-slate-800 mb-1">Harga Beli / Satuan (HPP) <span class="text-red-500">*</span></label>
-                        <input type="number" id="unit_cost" name="unit_cost" value="{{ old('unit_cost') }}" required min="0" step="500"
+                        <input type="number" id="unit_cost" name="unit_cost" value="{{ old('unit_cost') }}" required min="0" step="1"
                                placeholder="Contoh: 95000"
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] font-mono text-sm text-slate-900 outline-none">
                     </div>
