@@ -157,26 +157,54 @@
                                         @click="window.playPosCartSound && window.playPosCartSound(); clicking = true; setTimeout(() => clicking = false, 120)"
                                         :class="{ 'scale-95 bg-rose-50 border-[#881337]': clicking }"
                                         {{ $isOut ? 'disabled' : '' }}
-                                        class="group p-2.5 rounded-xl border text-left transition-all duration-75 flex flex-col justify-between cursor-pointer min-h-[110px] select-none {{ $isOut ? 'opacity-50 bg-slate-50 border-slate-200 cursor-not-allowed' : 'bg-white hover:border-[#881337] hover:shadow-md border-slate-200' }}">
-                                    <div>
-                                        <div class="flex items-start justify-between gap-1 mb-1">
-                                            <span class="text-[10px] font-mono text-slate-400">{{ $product->barcode ?: '-' }}</span>
-                                            <!-- Stock Badge -->
+                                        class="group p-2 rounded-2xl border text-left transition-all duration-100 flex flex-col justify-between cursor-pointer select-none relative overflow-hidden {{ $isOut ? 'opacity-50 bg-slate-50 border-slate-200 cursor-not-allowed' : 'bg-white hover:border-[#881337] hover:shadow-lg border-slate-200 hover:-translate-y-0.5' }}">
+
+                                    <!-- Product Image Thumbnail -->
+                                    <div class="relative w-full aspect-square sm:aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 mb-2 border border-slate-100">
+                                        @if($product->image)
+                                            <img src="{{ asset('storage/' . $product->image) }}"
+                                                 alt="{{ $product->name }}"
+                                                 loading="lazy"
+                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200 select-none pointer-events-none">
+                                        @else
+                                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-rose-50 to-slate-100 text-[#881337]/50">
+                                                <svg class="w-8 h-8 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                <span class="text-[10px] font-bold text-slate-400 uppercase mt-0.5">{{ substr($product->name, 0, 3) }}</span>
+                                            </div>
+                                        @endif
+
+                                        <!-- Stock Badge Overlay -->
+                                        <div class="absolute top-1.5 right-1.5 z-10">
                                             @if($isOut)
-                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700">Habis</span>
+                                                <span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-red-600 text-white shadow-xs">Habis</span>
                                             @elseif($isLow)
-                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Sisa {{ $product->stock }}</span>
+                                                <span class="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-500 text-white shadow-xs">Sisa {{ $product->stock }}</span>
                                             @else
-                                                <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700">Stok {{ $product->stock }}</span>
+                                                <span class="px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-600 text-white shadow-xs">Stok {{ $product->stock }}</span>
                                             @endif
                                         </div>
-                                        <h4 class="font-semibold text-xs text-slate-800 leading-snug line-clamp-2 group-hover:text-[#881337]">
+
+                                        @if($product->barcode)
+                                            <div class="absolute bottom-1 left-1 bg-black/60 backdrop-blur-xs text-white text-[9px] font-mono px-1 rounded z-10">
+                                                {{ $product->barcode }}
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Product Info -->
+                                    <div class="flex-1 flex flex-col justify-between">
+                                        <h4 class="font-bold text-xs text-slate-800 leading-snug line-clamp-2 group-hover:text-[#881337] transition-colors mb-1.5">
                                             {{ $product->name }}
                                         </h4>
-                                    </div>
-                                    <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
-                                        <span class="text-xs font-bold text-[#70102e]">{{ format_rupiah($retailPrice) }}</span>
-                                        <span class="text-[10px] text-[#881337] group-hover:translate-x-0.5 transition-transform font-bold">+ Tambah</span>
+
+                                        <div class="pt-1.5 border-t border-slate-100 flex items-center justify-between mt-auto">
+                                            <span class="text-xs font-black text-[#70102e]">{{ format_rupiah($retailPrice) }}</span>
+                                            <span class="text-[10px] text-[#881337] group-hover:translate-x-0.5 transition-transform font-bold flex items-center">
+                                                + Tambah
+                                            </span>
+                                        </div>
                                     </div>
                                 </button>
                             @endforeach
@@ -232,21 +260,33 @@
                     @else
                         @foreach($cart as $productId => $item)
                             <div wire:key="cart-row-{{ $productId }}" class="py-2.5 flex flex-col space-y-1.5">
-                                <div class="flex items-start justify-between gap-2">
-                                    <div class="flex-1 min-w-0">
-                                        <h5 class="text-xs font-semibold text-slate-900 leading-tight truncate">
-                                            {{ $item['name'] }}
-                                        </h5>
-                                        <div class="flex items-center space-x-1.5 mt-0.5">
-                                            <span class="text-[11px] text-slate-500">{{ format_rupiah($item['price']) }}</span>
-                                            <!-- Tier Label Badge -->
-                                            <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold {{ $item['tier'] === 'super_wholesale' ? 'bg-purple-100 text-purple-700' : ($item['tier'] === 'wholesale' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600') }}">
-                                                {{ tier_label($item['tier']) }}
-                                            </span>
+                                <div class="flex items-start justify-between gap-2.5">
+                                    <div class="flex items-start space-x-2.5 flex-1 min-w-0">
+                                        <!-- Thumbnail in Cart -->
+                                        <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 mt-0.5">
+                                            @if(!empty($item['image']))
+                                                <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
+                                            @else
+                                                <div class="w-full h-full flex items-center justify-center text-[#881337] text-[10px] font-bold bg-rose-50">
+                                                    {{ substr($item['name'], 0, 2) }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h5 class="text-xs font-semibold text-slate-900 leading-tight truncate">
+                                                {{ $item['name'] }}
+                                            </h5>
+                                            <div class="flex items-center space-x-1.5 mt-0.5">
+                                                <span class="text-[11px] text-slate-500">{{ format_rupiah($item['price']) }}</span>
+                                                <!-- Tier Label Badge -->
+                                                <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold {{ $item['tier'] === 'super_wholesale' ? 'bg-purple-100 text-purple-700' : ($item['tier'] === 'wholesale' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600') }}">
+                                                    {{ tier_label($item['tier']) }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- Subtotal per line -->
-                                    <div class="text-right">
+                                    <div class="text-right shrink-0">
                                         <div class="text-xs font-bold text-slate-900">{{ format_rupiah($item['subtotal']) }}</div>
                                         @if(($item['item_discount'] ?? 0) > 0)
                                             <div class="text-[10px] text-red-600">-{{ format_rupiah($item['item_discount']) }}</div>
@@ -368,12 +408,23 @@
 
                     <div class="flex-1 overflow-y-auto divide-y divide-slate-200 pr-1 text-xs max-h-80">
                         @foreach($cart as $item)
-                            <div class="py-2 flex justify-between items-start">
-                                <div>
-                                    <div class="font-semibold text-slate-900">{{ $item['name'] }}</div>
-                                    <div class="text-[11px] text-slate-500">{{ $item['quantity'] }} {{ $item['unit'] }} &times; {{ format_rupiah($item['price']) }}</div>
+                            <div class="py-2 flex justify-between items-start gap-2">
+                                <div class="flex items-center space-x-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg overflow-hidden bg-white border border-slate-200 shrink-0">
+                                        @if(!empty($item['image']))
+                                            <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center text-[#881337] text-[9px] font-bold bg-rose-50">
+                                                {{ substr($item['name'], 0, 2) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="font-semibold text-slate-900 truncate">{{ $item['name'] }}</div>
+                                        <div class="text-[11px] text-slate-500">{{ $item['quantity'] }} {{ $item['unit'] }} &times; {{ format_rupiah($item['price']) }}</div>
+                                    </div>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right shrink-0">
                                     <div class="font-bold text-slate-900">{{ format_rupiah($item['subtotal']) }}</div>
                                     @if(($item['item_discount'] ?? 0) > 0)
                                         <div class="text-[10px] text-red-600">-{{ format_rupiah($item['item_discount']) }}</div>
