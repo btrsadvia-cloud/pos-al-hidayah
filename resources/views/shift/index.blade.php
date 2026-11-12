@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="max-w-4xl mx-auto space-y-6">
         <div>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Manajemen Shift Kasir</h1>
@@ -38,7 +38,7 @@
                         </p>
                         <input type="number" id="counted_cash" name="counted_cash" required min="0" step="500"
                                placeholder="Contoh: 1500000"
-                               class="w-full max-w-md px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 font-mono text-base font-bold text-slate-900 outline-none">
+                               class="w-full max-w-md px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] font-mono text-base font-bold text-slate-900 outline-none">
                     </div>
 
                     <div class="flex items-center space-x-3 pt-2">
@@ -48,7 +48,7 @@
                             Tutup Shift Sekarang
                         </button>
                         <a href="{{ route('pos.index') }}"
-                           class="px-5 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-sm shadow-xs transition min-h-[44px]">
+                           class="px-5 py-3 bg-[#881337] hover:bg-[#70102e] text-white font-semibold rounded-xl text-sm shadow-xs transition min-h-[44px]">
                             Lanjut ke Kasir POS &rarr;
                         </a>
                     </div>
@@ -77,11 +77,11 @@
                         </label>
                         <input type="number" id="opening_cash" name="opening_cash" required min="0" step="500"
                                placeholder="Contoh: 200000"
-                               class="w-full max-w-md px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 font-mono text-base font-bold text-slate-900 outline-none">
+                               class="w-full max-w-md px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] font-mono text-base font-bold text-slate-900 outline-none">
                     </div>
 
                     <button type="submit"
-                            class="px-6 py-3 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold rounded-xl text-sm shadow-md transition cursor-pointer min-h-[44px]">
+                            class="px-6 py-3 bg-[#881337] hover:bg-[#70102e] active:bg-[#5c0d26] text-white font-semibold rounded-xl text-sm shadow-md transition cursor-pointer min-h-[44px]">
                         Buka Shift Baru
                     </button>
                 </form>

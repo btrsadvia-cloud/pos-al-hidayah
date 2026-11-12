@@ -1,4 +1,4 @@
-<div class="h-[calc(100vh-6rem)] flex flex-col"
+﻿<div class="h-[calc(100vh-6rem)] flex flex-col"
      x-data="{
         isOnline: navigator.onLine,
         init() {
@@ -83,7 +83,7 @@
                                    spellcheck="false"
                                    placeholder="Ketik nama produk atau scan barcode, lalu tekan Enter / Cari (F2)..."
                                    autofocus
-                                   class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition min-h-[44px]">
+                                   class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-[#881337] focus:border-[#881337] outline-none transition min-h-[44px]">
                             <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -96,7 +96,7 @@
                             @endif
                         </div>
                         <button type="button" wire:click="handleBarcodeScan"
-                                class="ml-2 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition cursor-pointer min-h-[44px] flex items-center space-x-1 shrink-0">
+                                class="ml-2 bg-[#881337] hover:bg-[#70102e] active:bg-[#5c0d26] text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xs transition cursor-pointer min-h-[44px] flex items-center space-x-1 shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -107,7 +107,7 @@
                     <!-- Category Pill Filter -->
                     <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
                         <button type="button" wire:click="selectCategory(null)"
-                                class="px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition cursor-pointer {{ is_null($selectedCategoryId) ? 'bg-teal-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                                class="px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition cursor-pointer {{ is_null($selectedCategoryId) ? 'bg-[#881337] text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
                             Semua Kategori
                         </button>
                         @foreach($categories as $cat)
@@ -117,7 +117,7 @@
                             @endphp
                             @if($cId && $cName)
                                 <button type="button" wire:click="selectCategory({{ $cId }})"
-                                        class="px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition cursor-pointer {{ (int)$selectedCategoryId === (int)$cId ? 'bg-teal-600 text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                                        class="px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition cursor-pointer {{ (int)$selectedCategoryId === (int)$cId ? 'bg-[#881337] text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
                                     {{ $cName }}
                                 </button>
                             @endif
@@ -136,7 +136,7 @@
                             <p class="text-xs text-slate-400 mt-1">
                                 @if(trim($search) !== '')
                                     Tidak ada produk yang cocok dengan "{{ $search }}".
-                                    <button type="button" wire:click="resetSearch" class="text-teal-600 underline font-semibold ml-1 cursor-pointer">Lihat semua</button>
+                                    <button type="button" wire:click="resetSearch" class="text-[#881337] underline font-semibold ml-1 cursor-pointer">Lihat semua</button>
                                 @else
                                     Pilih kategori lain atau tambahkan produk baru.
                                 @endif
@@ -155,9 +155,9 @@
                                         wire:click="addToCart({{ $product->id }})"
                                         x-data="{ clicking: false }"
                                         @click="window.playPosCartSound && window.playPosCartSound(); clicking = true; setTimeout(() => clicking = false, 120)"
-                                        :class="{ 'scale-95 bg-teal-50 border-teal-500': clicking }"
+                                        :class="{ 'scale-95 bg-rose-50 border-[#881337]': clicking }"
                                         {{ $isOut ? 'disabled' : '' }}
-                                        class="group p-2.5 rounded-xl border text-left transition-all duration-75 flex flex-col justify-between cursor-pointer min-h-[110px] select-none {{ $isOut ? 'opacity-50 bg-slate-50 border-slate-200 cursor-not-allowed' : 'bg-white hover:border-teal-500 hover:shadow-md border-slate-200' }}">
+                                        class="group p-2.5 rounded-xl border text-left transition-all duration-75 flex flex-col justify-between cursor-pointer min-h-[110px] select-none {{ $isOut ? 'opacity-50 bg-slate-50 border-slate-200 cursor-not-allowed' : 'bg-white hover:border-[#881337] hover:shadow-md border-slate-200' }}">
                                     <div>
                                         <div class="flex items-start justify-between gap-1 mb-1">
                                             <span class="text-[10px] font-mono text-slate-400">{{ $product->barcode ?: '-' }}</span>
@@ -170,13 +170,13 @@
                                                 <span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700">Stok {{ $product->stock }}</span>
                                             @endif
                                         </div>
-                                        <h4 class="font-semibold text-xs text-slate-800 leading-snug line-clamp-2 group-hover:text-teal-700">
+                                        <h4 class="font-semibold text-xs text-slate-800 leading-snug line-clamp-2 group-hover:text-[#881337]">
                                             {{ $product->name }}
                                         </h4>
                                     </div>
                                     <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
-                                        <span class="text-xs font-bold text-teal-800">{{ format_rupiah($retailPrice) }}</span>
-                                        <span class="text-[10px] text-teal-600 group-hover:translate-x-0.5 transition-transform font-bold">+ Tambah</span>
+                                        <span class="text-xs font-bold text-[#70102e]">{{ format_rupiah($retailPrice) }}</span>
+                                        <span class="text-[10px] text-[#881337] group-hover:translate-x-0.5 transition-transform font-bold">+ Tambah</span>
                                     </div>
                                 </button>
                             @endforeach
@@ -187,7 +187,7 @@
                 <!-- Footer Quick Info -->
                 <div class="shrink-0 mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                     <span>{{ $products->count() }} produk tampil</span>
-                    <button type="button" wire:click="toggleShortcutsModal" class="text-teal-700 hover:underline cursor-pointer flex items-center space-x-1">
+                    <button type="button" wire:click="toggleShortcutsModal" class="text-[#881337] hover:underline cursor-pointer flex items-center space-x-1">
                         <span>Pintasan Keyboard (?)</span>
                     </button>
                 </div>
@@ -198,7 +198,7 @@
 
                 <div class="shrink-0 flex items-center justify-between pb-3 border-b border-slate-100">
                     <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-lg bg-rose-50 text-[#881337] flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
@@ -265,7 +265,7 @@
                                         <input type="number" min="1" max="{{ $item['max_stock'] }}"
                                                value="{{ $item['quantity'] }}"
                                                wire:change="updateQuantity({{ $productId }}, $event.target.value)"
-                                               class="w-14 text-center py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:bg-white focus:ring-1 focus:ring-teal-500">
+                                               class="w-14 text-center py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:bg-white focus:ring-1 focus:ring-[#881337]">
                                         <!-- Plus Button -->
                                         <button type="button" wire:click="incrementQuantity({{ $productId }})"
                                                 @click="window.playPosCartSound && window.playPosCartSound()"
@@ -313,7 +313,7 @@
                         @endif
                         <div class="flex justify-between text-slate-900 font-bold text-base pt-1 border-t border-slate-100">
                             <span>Total Belanja</span>
-                            <span class="text-teal-800 text-lg">{{ format_rupiah($total) }}</span>
+                            <span class="text-[#70102e] text-lg font-black">{{ format_rupiah($total) }}</span>
                         </div>
                     </div>
 
@@ -321,7 +321,7 @@
                     <button type="button" id="btn-to-payment"
                             wire:click="proceedToPayment"
                             {{ count($cart) === 0 ? 'disabled' : '' }}
-                            class="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-700 active:scale-98 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer min-h-[48px] animate-shimmer-btn">
+                            class="w-full py-3.5 px-4 bg-[#881337] hover:bg-[#70102e] active:scale-98 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer min-h-[48px] animate-shimmer-btn">
                         <span>LANJUT KE PEMBAYARAN &rarr; (F9)</span>
                     </button>
                 </div>
@@ -350,7 +350,7 @@
                     </div>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs font-semibold px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full">Langkah 2: Pembayaran</span>
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-rose-100 text-[#70102e] rounded-full">Langkah 2: Pembayaran</span>
                 </div>
             </div>
 
@@ -361,7 +361,7 @@
                 <div class="lg:col-span-5 flex flex-col bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-200">
                         <h4 class="font-bold text-xs uppercase tracking-wider text-slate-700">Rincian Belanja ({{ count($cart) }} Item)</h4>
-                        <button type="button" wire:click="backToCart" class="text-xs text-teal-700 hover:underline font-semibold cursor-pointer">
+                        <button type="button" wire:click="backToCart" class="text-xs text-[#881337] hover:underline font-semibold cursor-pointer">
                             + Tambah / Ubah
                         </button>
                     </div>
@@ -395,8 +395,8 @@
                     </div>
 
                     <!-- Grand Total Banner -->
-                    <div class="bg-gradient-to-br from-teal-700 to-teal-800 text-white p-4 rounded-xl shadow-xs mt-auto">
-                        <span class="text-xs text-teal-200 font-medium block uppercase tracking-wider">Total Tagihan:</span>
+                    <div class="bg-gradient-to-br from-[#70102e] to-[#881337] text-white p-4 rounded-xl shadow-xs mt-auto">
+                        <span class="text-xs text-rose-200 font-medium block uppercase tracking-wider">Total Tagihan:</span>
                         <span class="text-3xl font-black tracking-tight block mt-1">{{ format_rupiah($total) }}</span>
                     </div>
                 </div>
@@ -443,7 +443,7 @@
                                                @click="open = true"
                                                placeholder="Ketik manual nama / HP pelanggan..."
                                                autocomplete="off"
-                                               class="w-full py-2.5 px-3 bg-slate-50 border border-slate-300 rounded-xl outline-none text-xs focus:ring-2 focus:ring-teal-500 pr-8">
+                                               class="w-full py-2.5 px-3 bg-slate-50 border border-slate-300 rounded-xl outline-none text-xs focus:ring-2 focus:ring-[#881337] pr-8">
                                         <button type="button" x-show="search.length > 0" @click="clear()"
                                                 class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
                                             &times;
@@ -459,12 +459,12 @@
                                         </button>
                                         <template x-for="c in filtered" :key="c.id">
                                             <button type="button" @click="select(c)"
-                                                    class="w-full text-left px-3 py-2 hover:bg-teal-50 hover:text-teal-900 transition flex justify-between items-center cursor-pointer">
+                                                    class="w-full text-left px-3 py-2 hover:bg-rose-50 hover:text-[#70102e] transition flex justify-between items-center cursor-pointer">
                                                 <div>
                                                     <span class="font-bold text-slate-800 text-xs" x-text="c.name"></span>
                                                     <span class="text-[10px] text-slate-400 block" x-show="c.phone" x-text="'HP: ' + c.phone"></span>
                                                 </div>
-                                                <span class="text-teal-600 font-bold ml-2 shrink-0" x-show="selectedId == c.id">✓ Terpilih</span>
+                                                <span class="text-[#881337] font-bold ml-2 shrink-0" x-show="selectedId == c.id">✓ Terpilih</span>
                                             </button>
                                         </template>
                                     </div>
@@ -480,7 +480,7 @@
                                 </div>
                                 <input type="number" min="0" step="500" id="invoice-discount-input"
                                        wire:model.live.debounce.400ms="invoiceDiscount"
-                                       class="w-full py-2.5 px-3 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs focus:ring-2 focus:ring-teal-500 outline-none">
+                                       class="w-full py-2.5 px-3 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs focus:ring-2 focus:ring-[#881337] outline-none">
                             </div>
                         </div>
 
@@ -489,15 +489,15 @@
                             <label class="block font-semibold text-slate-700 mb-1.5">Metode Pembayaran</label>
                             <div class="grid grid-cols-3 gap-2">
                                 <button type="button" wire:click="$set('paymentMethod', 'cash')"
-                                        class="py-3 px-3 text-center rounded-xl font-bold border transition cursor-pointer select-none {{ $paymentMethod === 'cash' ? 'bg-teal-600 text-white border-teal-600 shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' }}">
+                                        class="py-3 px-3 text-center rounded-xl font-bold border transition cursor-pointer select-none {{ $paymentMethod === 'cash' ? 'bg-[#881337] text-white border-[#881337] shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' }}">
                                     💵 Tunai
                                 </button>
                                 <button type="button" wire:click="$set('paymentMethod', 'qris')"
-                                        class="py-3 px-3 text-center rounded-xl font-bold border transition cursor-pointer select-none {{ $paymentMethod === 'qris' ? 'bg-teal-600 text-white border-teal-600 shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' }}">
+                                        class="py-3 px-3 text-center rounded-xl font-bold border transition cursor-pointer select-none {{ $paymentMethod === 'qris' ? 'bg-[#881337] text-white border-[#881337] shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' }}">
                                     📱 QRIS
                                 </button>
                                 <button type="button" wire:click="$set('paymentMethod', 'transfer')"
-                                        class="py-3 px-3 text-center rounded-xl font-bold border transition cursor-pointer select-none {{ $paymentMethod === 'transfer' ? 'bg-teal-600 text-white border-teal-600 shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' }}">
+                                        class="py-3 px-3 text-center rounded-xl font-bold border transition cursor-pointer select-none {{ $paymentMethod === 'transfer' ? 'bg-[#881337] text-white border-[#881337] shadow-xs' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100' }}">
                                     🏦 Transfer
                                 </button>
                             </div>
@@ -508,7 +508,7 @@
                             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                                 <div class="flex justify-between items-center">
                                     <label class="font-bold text-slate-800 text-xs">Uang Diterima dari Pembeli (Rp)</label>
-                                    <button type="button" wire:click="setExactCash" class="text-teal-700 font-bold hover:underline cursor-pointer">
+                                    <button type="button" wire:click="setExactCash" class="text-[#881337] font-bold hover:underline cursor-pointer">
                                         Uang Pas ({{ format_rupiah($total) }})
                                     </button>
                                 </div>
@@ -543,14 +543,14 @@
                                 </div>
                             </div>
                         @elseif($paymentMethod === 'qris')
-                            <div class="bg-teal-50/70 p-4 rounded-xl border border-teal-200 text-teal-900 space-y-1 text-xs">
-                                <div class="font-bold flex items-center space-x-1.5 text-teal-800">
+                            <div class="bg-rose-50/80 p-4 rounded-xl border border-rose-200 text-slate-800 space-y-1 text-xs">
+                                <div class="font-bold flex items-center space-x-1.5 text-[#70102e]">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                                     </svg>
                                     <span>Pembayaran QRIS Otomatis</span>
                                 </div>
-                                <p class="text-[11px] text-teal-700">
+                                <p class="text-[11px] text-[#881337]">
                                     QRIS berlaku selama <strong>5 menit</strong>. Klik tombol "BUAT KODE QRIS" di bawah untuk memunculkan kode QR bagi pembeli.
                                 </p>
                             </div>
@@ -559,7 +559,7 @@
                                 <label class="block font-semibold text-slate-700">No. Rekening / ID Referensi Transfer</label>
                                 <input type="text" wire:model="paymentReference"
                                        placeholder="Contoh: Transfer BCA / Bukti Ref #12345"
-                                       class="w-full py-2.5 px-3 bg-white border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-teal-500">
+                                       class="w-full py-2.5 px-3 bg-white border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#881337]">
                             </div>
                         @endif
 
@@ -568,7 +568,7 @@
                             <label class="block font-semibold text-slate-700 mb-1">Catatan Tambahan (Opsional)</label>
                             <input type="text" wire:model="note"
                                    placeholder="Catatan transaksi..."
-                                   class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-teal-500">
+                                   class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#881337]">
                         </div>
                     </div>
 
@@ -581,7 +581,7 @@
                         <button type="button" id="btn-checkout"
                                 wire:click="checkout"
                                 :disabled="!isOnline || {{ count($cart) === 0 ? 'true' : 'false' }}"
-                                class="flex-1 py-3.5 px-4 bg-teal-600 hover:bg-teal-700 active:scale-98 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer min-h-[48px] animate-shimmer-btn">
+                                class="flex-1 py-3.5 px-4 bg-[#881337] hover:bg-[#70102e] active:scale-98 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 cursor-pointer min-h-[48px] animate-shimmer-btn">
                             <span wire:loading.remove wire:target="checkout">
                                 @if($paymentMethod === 'qris')
                                     📱 BUAT KODE QRIS (F9)
@@ -631,7 +631,7 @@
                 <!-- Header -->
                 <div class="flex items-center justify-between pb-2.5 border-b border-slate-100">
                     <div class="flex items-center space-x-2 text-left">
-                        <div class="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold">
+                        <div class="w-7 h-7 rounded-lg bg-rose-100 text-[#881337] flex items-center justify-center font-bold">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                             </svg>
@@ -659,13 +659,13 @@
                 </div>
 
                 <!-- Total Amount Banner (COMPACT) -->
-                <div class="mt-2.5 p-2.5 bg-gradient-to-r from-teal-700 to-teal-800 text-white rounded-xl shadow-xs">
-                    <span class="text-[10px] text-teal-200 block uppercase tracking-wider font-semibold">Total Tagihan:</span>
+                <div class="mt-2.5 p-2.5 bg-gradient-to-r from-[#70102e] to-[#881337] text-white rounded-xl shadow-xs">
+                    <span class="text-[10px] text-rose-200 block uppercase tracking-wider font-semibold">Total Tagihan:</span>
                     <span class="text-xl font-black tracking-tight block my-0.5">
                         {{ format_rupiah($qrisTotalAmount) }}
                     </span>
                     @if($qrisAmountUniq > 0)
-                        <span class="text-[10px] text-teal-100 block font-medium">
+                        <span class="text-[10px] text-rose-100 block font-medium">
                             (Kode unik: <strong>Rp {{ $qrisAmountUniq }}</strong>)
                         </span>
                     @endif
@@ -673,7 +673,7 @@
 
                 <!-- QR Code Display (COMPACT 144x144 px) -->
                 <div class="my-3">
-                    <div class="inline-block p-2 bg-white rounded-xl border border-teal-500 shadow-sm">
+                    <div class="inline-block p-2 bg-white rounded-xl border border-[#881337] shadow-sm">
                         @if(!empty($qrisImage))
                             <img src="{{ $qrisImage }}" alt="QRIS Code" class="w-36 h-36 mx-auto object-contain rounded">
                         @elseif(!empty($qrisQrUrl))
@@ -721,7 +721,7 @@
                 <div class="space-y-1.5">
                     <button type="button" wire:click="checkQrisStatus"
                             wire:loading.attr="disabled"
-                            class="w-full py-2.5 px-3 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-bold rounded-xl transition flex items-center justify-center space-x-1.5 cursor-pointer text-xs shadow-xs disabled:opacity-50">
+                            class="w-full py-2.5 px-3 bg-[#881337] hover:bg-[#70102e] active:bg-[#5c0d26] text-white font-bold rounded-xl transition flex items-center justify-center space-x-1.5 cursor-pointer text-xs shadow-xs disabled:opacity-50">
                         <span wire:loading.remove wire:target="checkQrisStatus">
                             🔍 CEK STATUS SEKARANG
                         </span>
@@ -865,7 +865,7 @@
                     </div>
                 </div>
                 <button type="button" wire:click="toggleShortcutsModal"
-                        class="w-full py-2 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs transition cursor-pointer">
+                        class="w-full py-2 bg-[#881337] hover:bg-[#70102e] text-white font-semibold rounded-xl text-xs transition cursor-pointer">
                     Mengerti
                 </button>
             </div>

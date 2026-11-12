@@ -1,7 +1,7 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="max-w-xl mx-auto space-y-6">
         <div>
-            <a href="{{ route('inventory.index') }}" class="text-xs text-teal-700 hover:underline flex items-center space-x-1 mb-2 font-medium">
+            <a href="{{ route('inventory.index') }}" class="text-xs text-[#881337] hover:underline flex items-center space-x-1 mb-2 font-medium">
                 <span>&larr; Kembali ke Mutasi Inventori</span>
             </a>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Catat Stok Keluar (Manual)</h1>
@@ -51,7 +51,7 @@
                                    placeholder="Ketik manual nama atau barcode produk..."
                                    autocomplete="off"
                                    required
-                                   class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900 pr-10">
+                                   class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] outline-none text-sm text-slate-900 pr-10">
                             <button type="button" x-show="search.length > 0" @click="clear()"
                                     class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
                                 &times;
@@ -63,12 +63,12 @@
                              class="absolute z-30 left-0 right-0 mt-1 max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs">
                             <template x-for="it in filtered" :key="it.id">
                                 <button type="button" @click="select(it)"
-                                        class="w-full text-left px-3.5 py-2.5 hover:bg-teal-50 hover:text-teal-900 transition flex justify-between items-center cursor-pointer">
+                                        class="w-full text-left px-3.5 py-2.5 hover:bg-rose-50 hover:text-[#4a0b1f] transition flex justify-between items-center cursor-pointer">
                                     <div>
                                         <span class="font-bold text-slate-800 block text-xs" x-text="it.name"></span>
                                         <span class="text-[11px] text-slate-400 block mt-0.5" x-text="it.extra"></span>
                                     </div>
-                                    <span class="text-teal-600 font-bold ml-2 shrink-0" x-show="selectedId == it.id">✓ Terpilih</span>
+                                    <span class="text-[#881337] font-bold ml-2 shrink-0" x-show="selectedId == it.id">✓ Terpilih</span>
                                 </button>
                             </template>
                         </div>
@@ -86,13 +86,13 @@
                         <label for="quantity" class="block text-sm font-semibold text-slate-800 mb-1">Jumlah Keluar <span class="text-red-500">*</span></label>
                         <input type="number" id="quantity" name="quantity" value="{{ old('quantity') }}" required min="1"
                                placeholder="Contoh: 2"
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 font-mono text-sm text-slate-900 outline-none">
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] font-mono text-sm text-slate-900 outline-none">
                     </div>
 
                     <div>
                         <label for="movement_date" class="block text-sm font-semibold text-slate-800 mb-1">Tanggal Keluar <span class="text-red-500">*</span></label>
                         <input type="date" id="movement_date" name="movement_date" value="{{ old('movement_date', date('Y-m-d')) }}" required
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 text-sm text-slate-900 outline-none">
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] text-sm text-slate-900 outline-none">
                     </div>
                 </div>
 
@@ -100,7 +100,7 @@
                     <label for="reason" class="block text-sm font-semibold text-slate-800 mb-1">Alasan Pengeluaran Stok <span class="text-red-500">*</span></label>
                     <textarea id="reason" name="reason" required rows="3"
                               placeholder="Wajib diisi: sebutkan alasan rinci, misalnya: Cacat robek pada bagian kerah, sample display etalase, hilang saat opname, dll."
-                              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 text-sm text-slate-900 outline-none">{{ old('reason') }}</textarea>
+                              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] text-sm text-slate-900 outline-none">{{ old('reason') }}</textarea>
                 </div>
 
                 <div class="flex items-center space-x-3 pt-3">

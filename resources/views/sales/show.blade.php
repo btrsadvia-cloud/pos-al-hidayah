@@ -1,7 +1,7 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="max-w-4xl mx-auto space-y-6">
         <div>
-            <a href="{{ route('sales.index') }}" class="text-xs text-teal-700 hover:underline flex items-center space-x-1 mb-2 font-medium">
+            <a href="{{ route('sales.index') }}" class="text-xs text-[#881337] hover:underline flex items-center space-x-1 mb-2 font-medium">
                 <span>&larr; Kembali ke Riwayat Penjualan</span>
             </a>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -154,7 +154,7 @@
                 </div>
                 <div class="flex justify-between w-64 text-slate-900 font-bold text-base pt-1 border-t border-slate-200">
                     <span>TOTAL AKHIR:</span>
-                    <span class="text-teal-800">{{ format_rupiah($sale->total) }}</span>
+                    <span class="text-[#70102e]">{{ format_rupiah($sale->total) }}</span>
                 </div>
                 <div class="flex justify-between w-64 text-slate-600 pt-1">
                     <span>Jumlah Dibayarkan:</span>

@@ -1,11 +1,11 @@
-<x-app-layout>
-    <div class="space-y-6">
+﻿<x-app-layout>
+    <div class="space-y-4">
         <!-- Page Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900">Pengaturan Gateway BuatQris</h1>
                 <p class="text-sm text-slate-500 mt-1">
-                    Integrasi pembayaran QRIS dinamis real-time melalui layanan <a href="https://app.buatqris.site" target="_blank" class="text-teal-600 hover:underline font-semibold">BuatQris.site</a>
+                    Integrasi pembayaran QRIS dinamis real-time melalui layanan <a href="https://app.buatqris.site" target="_blank" class="text-[#881337] hover:underline font-semibold">BuatQris.site</a>
                 </p>
             </div>
 
@@ -45,7 +45,7 @@
                             <input type="text" id="account_id" name="account_id"
                                    value="{{ old('account_id', $currentConfig['account_id']) }}" required
                                    placeholder="Contoh: ID akun dari dasbor BuatQris"
-                                   class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                                   class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] outline-none">
                             <p class="text-[11px] text-slate-400 mt-1">ID unik akun merchant BuatQris Anda.</p>
                         </div>
 
@@ -57,7 +57,7 @@
                             <input type="password" id="secret_token" name="secret_token"
                                    value="{{ old('secret_token', $currentConfig['secret_token']) }}" required
                                    placeholder="sk_live_xxxxxxxxxxxxxxxxxxxxxxxx"
-                                   class="w-full px-3 py-2 text-sm font-mono rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                                   class="w-full px-3 py-2 text-sm font-mono rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] outline-none">
                             <p class="text-[11px] text-slate-400 mt-1">Kunci rahasia API (diawali <code>sk_live_</code>). Disimpan aman di server.</p>
                         </div>
 
@@ -69,7 +69,7 @@
                             <input type="password" id="signing_secret" name="signing_secret"
                                    value="{{ old('signing_secret', $currentConfig['signing_secret']) }}"
                                    placeholder="Signing secret dari kartu Webhook di dasbor"
-                                   class="w-full px-3 py-2 text-sm font-mono rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                                   class="w-full px-3 py-2 text-sm font-mono rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] outline-none">
                             <p class="text-[11px] text-slate-400 mt-1">
                                 Digunakan untuk memverifikasi keaslian signature <code>X-BuatQris-Signature</code> pada webhook callback.
                             </p>
@@ -83,8 +83,8 @@
                                 </label>
                                 <div class="flex items-center space-x-2" x-data="{ fee: '{{ old('fee_by', $currentConfig['fee_by']) }}' }">
                                     <input type="hidden" name="fee_by" :value="fee">
-                                    <button type="button" @click="fee = 'user'" :class="fee === 'user' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">Saldo Toko</button>
-                                    <button type="button" @click="fee = 'buyer'" :class="fee === 'buyer' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">Pembeli</button>
+                                    <button type="button" @click="fee = 'user'" :class="fee === 'user' ? 'bg-[#881337] text-white border-[#881337]' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">Saldo Toko</button>
+                                    <button type="button" @click="fee = 'buyer'" :class="fee === 'buyer' ? 'bg-[#881337] text-white border-[#881337]' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer text-center">Pembeli</button>
                                 </div>
                             </div>
 
@@ -106,15 +106,15 @@
                                     get label() { return (this.items.find(i => i.val === this.selected) || this.items[0]).label; }
                                 }" class="relative">
                                     <input type="hidden" name="method" :value="selected">
-                                    <button type="button" @click="open = !open" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 bg-white text-left flex items-center justify-between cursor-pointer hover:border-teal-500 transition">
+                                    <button type="button" @click="open = !open" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 bg-white text-left flex items-center justify-between cursor-pointer hover:border-[#881337] transition">
                                         <span class="text-xs font-semibold text-slate-800" x-text="label"></span>
                                         <svg class="w-3.5 h-3.5 text-slate-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                     </button>
                                     <div x-show="open" @click.outside="open = false" x-cloak class="absolute z-30 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs overflow-hidden">
                                         <template x-for="it in items" :key="it.val">
-                                            <button type="button" @click="selected = it.val; open = false" class="w-full text-left px-3 py-2.5 hover:bg-teal-50 transition cursor-pointer flex justify-between items-center" :class="selected === it.val && 'bg-teal-50 text-teal-800'">
+                                            <button type="button" @click="selected = it.val; open = false" class="w-full text-left px-3 py-2.5 hover:bg-rose-50 transition cursor-pointer flex justify-between items-center" :class="selected === it.val && 'bg-rose-50 text-[#70102e]'">
                                                 <span class="font-semibold" x-text="it.label"></span>
-                                                <span class="text-teal-600 font-bold" x-show="selected === it.val">✓</span>
+                                                <span class="text-[#881337] font-bold" x-show="selected === it.val">✓</span>
                                             </button>
                                         </template>
                                     </div>
@@ -127,7 +127,7 @@
                             <label class="flex items-start space-x-3 cursor-pointer">
                                 <input type="checkbox" name="test_mode" value="1"
                                        {{ old('test_mode', $currentConfig['test_mode']) ? 'checked' : '' }}
-                                       class="mt-1 w-4 h-4 rounded text-teal-600 focus:ring-teal-500 border-slate-300">
+                                       class="mt-1 w-4 h-4 rounded text-[#881337] focus:ring-[#881337] border-slate-300">
                                 <div class="text-xs">
                                     <span class="font-semibold text-slate-800">Mode Sandbox / Uji Coba (test=1)</span>
                                     <p class="text-slate-400">
@@ -140,7 +140,7 @@
                         <!-- Submit Button -->
                         <div class="pt-4 border-t border-slate-100 flex justify-end">
                             <button type="submit"
-                                    class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-bold text-sm rounded-xl shadow-sm transition cursor-pointer">
+                                    class="px-5 py-2.5 bg-[#881337] hover:bg-[#70102e] active:bg-[#5c0d26] text-white font-bold text-sm rounded-xl shadow-sm transition cursor-pointer">
                                 Simpan Konfigurasi
                             </button>
                         </div>
@@ -149,10 +149,10 @@
             </div>
 
             <!-- Right Col: Webhook & Info Guide -->
-            <div class="space-y-6">
+            <div class="space-y-4">
                 <!-- Webhook Card -->
                 <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
-                    <div class="flex items-center space-x-2 text-teal-700">
+                    <div class="flex items-center space-x-2 text-[#881337]">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
@@ -170,7 +170,7 @@
                                 @click="navigator.clipboard.writeText(document.getElementById('webhook-url-input').value); copied = true; setTimeout(() => copied = false, 2500);"
                                 class="shrink-0 px-2.5 py-1 bg-white border border-slate-200 hover:bg-slate-100 text-xs font-semibold rounded-lg text-slate-700 shadow-2xs transition cursor-pointer">
                             <span x-show="!copied">Salin URL</span>
-                            <span x-show="copied" x-cloak class="text-teal-700 font-bold">✓ Tersalin!</span>
+                            <span x-show="copied" x-cloak class="text-[#881337] font-bold">✓ Tersalin!</span>
                         </button>
                     </div>
 
@@ -226,7 +226,7 @@
                                         <span class="ml-1 text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold">TEST</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 font-mono text-teal-700">
+                                <td class="px-4 py-3 font-mono text-[#881337]">
                                     @if($trx->sale_id)
                                         <a href="{{ route('sales.show', $trx->sale_id) }}" class="hover:underline font-bold">
                                             {{ $trx->invoice_number }}
@@ -260,7 +260,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-right space-x-1">
                                     <a href="{{ route('settings.buatqris.check-status', $trx->transaction_id) }}"
-                                       class="px-2.5 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold transition cursor-pointer">
+                                       class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-[#881337] font-semibold transition cursor-pointer">
                                         Cek Status
                                     </a>
                                 </td>

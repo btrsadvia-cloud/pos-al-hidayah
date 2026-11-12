@@ -1,7 +1,7 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="space-y-6 max-w-5xl mx-auto">
         <div>
-            <a href="{{ route('inventory.index') }}" class="text-xs text-teal-700 hover:underline flex items-center space-x-1 mb-2 font-medium">
+            <a href="{{ route('inventory.index') }}" class="text-xs text-[#881337] hover:underline flex items-center space-x-1 mb-2 font-medium">
                 <span>&larr; Kembali ke Mutasi Inventori</span>
             </a>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -19,7 +19,7 @@
                         Cetak Kartu Stok
                     </button>
                     <a href="{{ route('products.show', $product) }}"
-                       class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition min-h-[40px] flex items-center">
+                       class="px-4 py-2 bg-[#881337] hover:bg-[#70102e] text-white rounded-xl text-xs font-semibold transition min-h-[40px] flex items-center">
                         Detail Produk
                     </a>
                 </div>
@@ -38,7 +38,7 @@
             </div>
             <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
                 <span class="text-xs text-slate-500 font-medium">Harga Beli Terakhir (HPP)</span>
-                <div class="text-2xl font-bold text-teal-800 mt-1">
+                <div class="text-2xl font-bold text-[#70102e] mt-1">
                     {{ $product->latestCost() ? format_rupiah($product->latestCost()) : '-' }}
                 </div>
             </div>

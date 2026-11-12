@@ -1,12 +1,12 @@
-<x-app-layout>
-    <div class="space-y-6">
+﻿<x-app-layout>
+    <div class="space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Manajemen Pengguna</h1>
                 <p class="text-sm text-slate-500 mt-0.5">Kelola akun admin dan kasir Toko Al-Hidayah (penonaktifan akun tanpa hapus data transaksi)</p>
             </div>
             <a href="{{ route('users.create') }}"
-               class="inline-flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition min-h-[44px]">
+               class="inline-flex items-center space-x-1.5 bg-[#881337] hover:bg-[#70102e] text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition min-h-[44px]">
                 <span>+ Tambah Pengguna Baru</span>
             </a>
         </div>
@@ -29,7 +29,7 @@
                                 <td class="py-3 px-4 font-bold text-slate-900 text-sm">
                                     {{ $u->name }}
                                     @if($u->id === auth()->id())
-                                        <span class="text-[10px] text-teal-700 font-semibold ml-1">(Anda)</span>
+                                        <span class="text-[10px] text-[#881337] font-semibold ml-1">(Anda)</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 font-mono text-slate-600 font-medium">@ {{ $u->username }}</td>
@@ -39,7 +39,7 @@
                                             Admin (Pemilik)
                                         </span>
                                     @else
-                                        <span class="px-2.5 py-0.5 bg-teal-50 text-teal-700 rounded-full font-semibold text-[11px]">
+                                        <span class="px-2.5 py-0.5 bg-rose-50 text-[#881337] rounded-full font-semibold text-[11px]">
                                             Kasir
                                         </span>
                                     @endif
@@ -56,7 +56,7 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 text-right space-x-2">
-                                    <a href="{{ route('users.edit', $u) }}" class="text-teal-700 hover:underline font-semibold">Ubah</a>
+                                    <a href="{{ route('users.edit', $u) }}" class="text-[#881337] hover:underline font-semibold">Ubah</a>
 
                                     @if($u->id !== auth()->id())
                                         <form method="POST" action="{{ route('users.toggle-active', $u) }}" class="inline"

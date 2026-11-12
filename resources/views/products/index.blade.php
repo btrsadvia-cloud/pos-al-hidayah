@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div x-data="{
         showImageModal: false,
         activeProductId: null,
@@ -20,14 +20,14 @@
                 reader.readAsDataURL(file);
             }
         }
-    }" class="space-y-6">
+    }" class="space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Katalog Produk</h1>
                 <p class="text-sm text-slate-500 mt-0.5">Kelola data barang, barcode, stok, dan harga bertingkat</p>
             </div>
             <a href="{{ route('products.create') }}"
-               class="inline-flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition min-h-[44px]">
+               class="inline-flex items-center space-x-1.5 bg-[#881337] hover:bg-[#70102e] text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition min-h-[44px]">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -41,18 +41,18 @@
                 <div class="sm:col-span-5">
                     <input type="text" name="search" value="{{ request('search') }}"
                            placeholder="Cari nama atau barcode produk..."
-                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 text-xs">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#881337] text-xs">
                 </div>
 
                 <div class="sm:col-span-4">
                     <input type="text" name="category" value="{{ request('category') }}"
                            placeholder="Ketik kategori produk..."
-                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-teal-500 text-xs">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#881337] text-xs">
                 </div>
 
                 <div class="sm:col-span-3 flex items-center space-x-2">
                     <button type="submit"
-                            class="flex-1 py-2.5 px-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition cursor-pointer min-h-[40px]">
+                            class="flex-1 py-2.5 px-3 bg-[#881337] hover:bg-[#70102e] text-white font-semibold rounded-xl transition cursor-pointer min-h-[40px]">
                         Filter
                     </button>
                     @if(request()->hasAny(['search', 'category', 'category_id', 'low_stock']))
@@ -97,7 +97,7 @@
                                             @if($p->image)
                                                 <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="w-12 h-12 rounded-xl object-cover border border-slate-200">
                                             @else
-                                                <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-700 font-bold flex items-center justify-center border border-teal-100 text-sm">
+                                                <div class="w-12 h-12 rounded-xl bg-rose-50 text-[#881337] font-bold flex items-center justify-center border border-rose-100 text-sm">
                                                     {{ substr($p->name, 0, 2) }}
                                                 </div>
                                             @endif
@@ -111,7 +111,7 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <a href="{{ route('products.show', $p) }}" class="font-bold text-slate-900 text-sm hover:text-teal-700 leading-snug block">
+                                            <a href="{{ route('products.show', $p) }}" class="font-bold text-slate-900 text-sm hover:text-[#881337] leading-snug block">
                                                 {{ $p->name }}
                                             </a>
                                             <span class="text-[11px] font-mono text-slate-400">Barcode: {{ $p->barcode ?: '-' }}</span>
@@ -156,7 +156,7 @@
                                 <td class="py-3 px-4 text-right whitespace-nowrap space-x-2">
                                     <a href="{{ route('inventory.card', $p) }}" class="text-blue-600 hover:underline font-semibold" title="Kartu Stok">Kartu</a>
                                     <a href="{{ route('products.prices', $p) }}" class="text-amber-600 hover:underline font-semibold" title="Atur 3 Tingkat Harga">Harga</a>
-                                    <a href="{{ route('products.edit', $p) }}" class="text-teal-700 hover:underline font-semibold">Ubah</a>
+                                    <a href="{{ route('products.edit', $p) }}" class="text-[#881337] hover:underline font-semibold">Ubah</a>
                                     <form method="POST" action="{{ route('products.destroy', $p) }}" class="inline" onsubmit="return window.customConfirm(event, 'Apakah Anda yakin ingin menghapus produk {{ addslashes($p->name) }}?', 'Hapus Produk', 'Ya, Hapus')">
                                         @csrf
                                         @method('DELETE')
@@ -200,7 +200,7 @@
                     <!-- Current / New Preview -->
                     <div class="flex flex-col items-center justify-center p-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl">
                         <template x-if="newImagePreview">
-                            <img :src="newImagePreview" class="w-40 h-40 object-cover rounded-xl shadow-md border border-teal-500">
+                            <img :src="newImagePreview" class="w-40 h-40 object-cover rounded-xl shadow-md border border-[#881337]">
                         </template>
                         <template x-if="!newImagePreview && currentImagePreview">
                             <img :src="currentImagePreview" class="w-40 h-40 object-cover rounded-xl shadow-sm border border-slate-200">
@@ -220,7 +220,7 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Berkas Foto Baru</label>
                         <input type="file" name="image" accept="image/jpeg,image/png,image/jpg,image/webp" required
                                @change="previewFile"
-                               class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer">
+                               class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-[#881337] hover:file:bg-rose-100 cursor-pointer">
                         <p class="text-[11px] text-slate-400 mt-1">Format: JPG, PNG, WEBP. Maksimal 5MB.</p>
                     </div>
 
@@ -230,7 +230,7 @@
                             Batal
                         </button>
                         <button type="submit"
-                                class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl transition cursor-pointer shadow-xs">
+                                class="px-5 py-2 bg-[#881337] hover:bg-[#70102e] text-white text-xs font-bold rounded-xl transition cursor-pointer shadow-xs">
                             Simpan Foto Baru
                         </button>
                     </div>

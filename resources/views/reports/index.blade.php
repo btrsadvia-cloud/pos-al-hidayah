@@ -1,5 +1,5 @@
-<x-app-layout>
-    <div class="space-y-6">
+﻿<x-app-layout>
+    <div class="space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Laporan Penjualan</h1>
@@ -40,7 +40,7 @@
 
                 <div class="sm:col-span-4 flex space-x-2">
                     <button type="submit"
-                            class="flex-1 py-2 px-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition cursor-pointer min-h-[38px]">
+                            class="flex-1 py-2 px-4 bg-[#881337] hover:bg-[#70102e] text-white font-semibold rounded-xl transition cursor-pointer min-h-[38px]">
                         Tampilkan Laporan
                     </button>
                 </div>
@@ -51,7 +51,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
                 <span class="text-xs text-slate-500 font-medium uppercase tracking-wider block">Total Omzet Bersih</span>
-                <span class="text-2xl font-bold text-teal-800 mt-1 block">{{ format_rupiah($summary->total_revenue) }}</span>
+                <span class="text-2xl font-bold text-[#70102e] mt-1 block">{{ format_rupiah($summary->total_revenue) }}</span>
             </div>
 
             <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
@@ -83,7 +83,7 @@
                             <span class="text-xs font-bold text-slate-800 uppercase block">{{ $pb->payment_method }}</span>
                             <span class="text-[11px] text-slate-500">{{ $pb->count }} Transaksi</span>
                         </div>
-                        <span class="font-bold text-sm text-teal-800">{{ format_rupiah($pb->total) }}</span>
+                        <span class="font-bold text-sm text-[#70102e]">{{ format_rupiah($pb->total) }}</span>
                     </div>
                 @endforeach
             </div>
@@ -113,7 +113,7 @@
                     <tbody class="divide-y divide-slate-100">
                         @forelse($sales as $s)
                             <tr class="hover:bg-slate-50">
-                                <td class="py-3 px-4 font-mono font-bold text-teal-700">
+                                <td class="py-3 px-4 font-mono font-bold text-[#881337]">
                                     <a href="{{ route('sales.show', $s) }}" class="hover:underline">{{ $s->invoice_number }}</a>
                                 </td>
                                 <td class="py-3 px-4 font-mono text-slate-600 whitespace-nowrap">{{ $s->sold_at->format('d/m/Y H:i') }}</td>

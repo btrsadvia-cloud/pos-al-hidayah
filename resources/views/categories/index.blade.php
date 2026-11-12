@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="space-y-6 max-w-4xl mx-auto">
         <div class="flex items-center justify-between">
             <div>
@@ -6,7 +6,7 @@
                 <p class="text-sm text-slate-500 mt-0.5">Kelola pengelompokan produk Toko Al-Hidayah</p>
             </div>
             <a href="{{ route('categories.create') }}"
-               class="inline-flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition min-h-[44px]">
+               class="inline-flex items-center space-x-1.5 bg-[#881337] hover:bg-[#70102e] text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition min-h-[44px]">
                 <span>+ Tambah Kategori</span>
             </a>
         </div>
@@ -33,7 +33,7 @@
                                     </span>
                                 </td>
                                 <td class="py-3 px-4 text-right space-x-2">
-                                    <a href="{{ route('categories.edit', $c) }}" class="text-teal-700 hover:underline font-semibold">Ubah</a>
+                                    <a href="{{ route('categories.edit', $c) }}" class="text-[#881337] hover:underline font-semibold">Ubah</a>
                                     <form method="POST" action="{{ route('categories.destroy', $c) }}" class="inline" onsubmit="return window.customConfirm(event, 'Hapus kategori {{ addslashes($c->name) }}?', 'Hapus Kategori', 'Ya, Hapus')">
                                         @csrf
                                         @method('DELETE')

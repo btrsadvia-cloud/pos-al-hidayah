@@ -7,8 +7,6 @@
     <title>{{ $title ?? 'POS Toko Al-Hidayah' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
-    <!-- Chart.js for dashboard trends -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         [x-cloak] { display: none !important; }
         @media print {
@@ -477,7 +475,7 @@
                         window.speechSynthesis.cancel();
                         const rawAmount = amount ? parseInt(amount, 10) : 0;
                         const formatted = rawAmount ? rawAmount.toLocaleString('id-ID') : '';
-                        const speechText = 'Pembayaran Q R I S sebesar ' + (formatted || amount || '') + ' rupiah berhasil diterima.';
+                        const speechText = 'diterima uang sebesar ' + (formatted || amount || '') + ' rupiah, terimakasih.';
 
                         const msg = new SpeechSynthesisUtterance(speechText);
                         msg.lang = 'id-ID';

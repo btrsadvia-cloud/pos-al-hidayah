@@ -1,14 +1,14 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="max-w-2xl mx-auto space-y-6">
         <div>
-            <a href="{{ route('products.index') }}" class="text-xs text-teal-700 hover:underline flex items-center space-x-1 mb-2 font-medium">
+            <a href="{{ route('products.index') }}" class="text-xs text-[#881337] hover:underline flex items-center space-x-1 mb-2 font-medium">
                 <span>&larr; Kembali ke Katalog Produk</span>
             </a>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Atur Tingkat Harga Bertingkat</h1>
             <p class="text-sm text-slate-500 mt-0.5">Produk: <span class="font-bold text-slate-800">{{ $product->name }}</span> (Satuan: {{ $product->unit->name ?? 'Pcs' }})</p>
         </div>
 
-        <form method="POST" action="{{ route('products.prices.update', $product) }}" class="space-y-6">
+        <form method="POST" action="{{ route('products.prices.update', $product) }}" class="space-y-4">
             @csrf
             @method('PUT')
 
@@ -63,7 +63,7 @@
 
             <div class="flex items-center space-x-3">
                 <button type="submit"
-                        class="px-6 py-3 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold rounded-xl text-sm shadow-md transition cursor-pointer min-h-[44px]">
+                        class="px-6 py-3 bg-[#881337] hover:bg-[#70102e] active:bg-[#5c0d26] text-white font-semibold rounded-xl text-sm shadow-md transition cursor-pointer min-h-[44px]">
                     Simpan Perubahan Harga
                 </button>
                 <a href="{{ route('products.index') }}"

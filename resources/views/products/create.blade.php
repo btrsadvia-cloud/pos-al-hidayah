@@ -1,14 +1,14 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="max-w-3xl mx-auto space-y-6">
         <div>
-            <a href="{{ route('products.index') }}" class="text-xs text-teal-700 hover:underline flex items-center space-x-1 mb-2 font-medium">
+            <a href="{{ route('products.index') }}" class="text-xs text-[#881337] hover:underline flex items-center space-x-1 mb-2 font-medium">
                 <span>&larr; Kembali ke Katalog Produk</span>
             </a>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Tambah Produk Baru</h1>
             <p class="text-sm text-slate-500 mt-0.5">Isi detail barang beserta 3 tingkatan harga (eceran, grosir, super grosir)</p>
         </div>
 
-        <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data" class="space-y-6">
+        <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data" class="space-y-4">
             @csrf
 
             <!-- Section 1: Informasi Produk -->
@@ -20,20 +20,20 @@
                         <label for="name" class="block text-sm font-semibold text-slate-800 mb-1">Nama Produk <span class="text-red-500">*</span></label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" required
                                placeholder="Contoh: Gamis Katun Rayon Premium"
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none text-sm text-slate-900">
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] outline-none text-sm text-slate-900">
                     </div>
 
                     <div>
                         <label for="barcode" class="block text-sm font-semibold text-slate-800 mb-1">Barcode / Kode SKU</label>
                         <input type="text" id="barcode" name="barcode" value="{{ old('barcode') }}"
                                placeholder="Contoh: 8991234567890 (bisa scan)"
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none font-mono text-sm text-slate-900">
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] outline-none font-mono text-sm text-slate-900">
                     </div>
 
                     <div>
                         <label for="image" class="block text-sm font-semibold text-slate-800 mb-1">Foto Produk (Opsional)</label>
                         <input type="file" id="image" name="image" accept="image/*"
-                               class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer">
+                               class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-[#881337] hover:file:bg-rose-100 cursor-pointer">
                     </div>
 
                     <div>
@@ -74,7 +74,7 @@
                                        placeholder="Ketik manual kategori produk..."
                                        autocomplete="off"
                                        required
-                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none text-sm text-slate-900 pr-10">
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] outline-none text-sm text-slate-900 pr-10">
                                 <button type="button" x-show="search.length > 0" @click="clear()"
                                         class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer">
                                     &times;
@@ -86,9 +86,9 @@
                                  class="absolute z-30 left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100 text-xs">
                                 <template x-for="it in filtered" :key="it.id">
                                     <button type="button" @click="select(it)"
-                                            class="w-full text-left px-3.5 py-2.5 hover:bg-teal-50 hover:text-teal-900 transition flex justify-between items-center cursor-pointer">
+                                            class="w-full text-left px-3.5 py-2.5 hover:bg-rose-50 hover:text-[#4a0b1f] transition flex justify-between items-center cursor-pointer">
                                         <span class="font-semibold text-slate-800 text-xs" x-text="it.name"></span>
-                                        <span class="text-teal-600 font-bold ml-2 shrink-0" x-show="selectedId == it.id">✓ Terpilih</span>
+                                        <span class="text-[#881337] font-bold ml-2 shrink-0" x-show="selectedId == it.id">✓ Terpilih</span>
                                     </button>
                                 </template>
                             </div>
@@ -99,13 +99,13 @@
                     <div>
                         <label for="stock" class="block text-sm font-semibold text-slate-800 mb-1">Stok Awal <span class="text-red-500">*</span></label>
                         <input type="number" id="stock" name="stock" value="{{ old('stock', 0) }}" required min="0"
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none font-mono text-sm text-slate-900">
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] outline-none font-mono text-sm text-slate-900">
                     </div>
 
                     <div>
                         <label for="min_stock" class="block text-sm font-semibold text-slate-800 mb-1">Batas Minimum Stok (Peringatan) <span class="text-red-500">*</span></label>
                         <input type="number" id="min_stock" name="min_stock" value="{{ old('min_stock', 5) }}" required min="0"
-                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 outline-none font-mono text-sm text-slate-900">
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] outline-none font-mono text-sm text-slate-900">
                     </div>
                 </div>
             </div>
@@ -171,7 +171,7 @@
             <!-- Submit Buttons -->
             <div class="flex items-center space-x-3">
                 <button type="submit"
-                        class="px-6 py-3 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold rounded-xl text-sm shadow-md transition cursor-pointer min-h-[44px]">
+                        class="px-6 py-3 bg-[#881337] hover:bg-[#70102e] active:bg-[#5c0d26] text-white font-semibold rounded-xl text-sm shadow-md transition cursor-pointer min-h-[44px]">
                     Simpan Produk
                 </button>
                 <a href="{{ route('products.index') }}"

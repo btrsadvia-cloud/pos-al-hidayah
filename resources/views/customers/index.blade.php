@@ -1,12 +1,12 @@
-<x-app-layout>
-    <div class="space-y-6">
+﻿<x-app-layout>
+    <div class="space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Data Pelanggan</h1>
                 <p class="text-sm text-slate-500 mt-0.5">Kelola data pembeli tetap / member Toko Al-Hidayah</p>
             </div>
             <a href="{{ route('customers.create') }}"
-               class="inline-flex items-center space-x-1.5 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition min-h-[44px]">
+               class="inline-flex items-center space-x-1.5 bg-[#881337] hover:bg-[#70102e] text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition min-h-[44px]">
                 <span>+ Tambah Pelanggan</span>
             </a>
         </div>
@@ -16,7 +16,7 @@
                 <form method="GET" action="{{ route('customers.index') }}" class="max-w-md">
                     <input type="text" name="search" value="{{ request('search') }}"
                            placeholder="Cari nama atau no. telepon pelanggan..."
-                           class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-teal-500">
+                           class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs outline-none focus:bg-white focus:ring-2 focus:ring-[#881337]">
                 </form>
             </div>
 
@@ -42,12 +42,12 @@
                                 <td class="py-3 px-4 text-slate-700 font-mono">{{ $c->phone ?: '-' }}</td>
                                 <td class="py-3 px-4 text-slate-600 max-w-xs truncate">{{ $c->address ?: '-' }}</td>
                                 <td class="py-3 px-4 text-center">
-                                    <span class="px-2 py-0.5 bg-teal-50 text-teal-700 rounded-full font-bold">
+                                    <span class="px-2 py-0.5 bg-rose-50 text-[#881337] rounded-full font-bold">
                                         {{ $c->sales()->count() }}
                                     </span>
                                 </td>
                                 <td class="py-3 px-4 text-right space-x-2">
-                                    <a href="{{ route('customers.edit', $c) }}" class="text-teal-700 hover:underline font-semibold">Ubah</a>
+                                    <a href="{{ route('customers.edit', $c) }}" class="text-[#881337] hover:underline font-semibold">Ubah</a>
                                     <form method="POST" action="{{ route('customers.destroy', $c) }}" class="inline" onsubmit="return window.customConfirm(event, 'Hapus data pelanggan {{ addslashes($c->name) }}?', 'Hapus Pelanggan', 'Ya, Hapus')">
                                         @csrf
                                         @method('DELETE')

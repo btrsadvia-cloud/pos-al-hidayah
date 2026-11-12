@@ -1,7 +1,7 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="max-w-4xl mx-auto space-y-6">
         <div>
-            <a href="{{ route('products.index') }}" class="text-xs text-teal-700 hover:underline flex items-center space-x-1 mb-2 font-medium">
+            <a href="{{ route('products.index') }}" class="text-xs text-[#881337] hover:underline flex items-center space-x-1 mb-2 font-medium">
                 <span>&larr; Kembali ke Katalog Produk</span>
             </a>
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -15,7 +15,7 @@
                         Lihat Kartu Stok &rarr;
                     </a>
                     <a href="{{ route('products.edit', $product) }}"
-                       class="px-4 py-2 bg-teal-600 text-white rounded-xl text-xs font-semibold hover:bg-teal-700 transition">
+                       class="px-4 py-2 bg-[#881337] text-white rounded-xl text-xs font-semibold hover:bg-[#70102e] transition">
                         Ubah Data
                     </a>
                 </div>
@@ -38,7 +38,7 @@
             <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
                 <span class="text-xs font-medium text-slate-500 uppercase tracking-wider block">Harga Eceran (Tingkat 1)</span>
                 @php $retail = $product->prices->firstWhere('tier', 'retail'); @endphp
-                <div class="text-2xl font-black text-teal-800 mt-2">
+                <div class="text-2xl font-black text-[#70102e] mt-2">
                     {{ $retail ? format_rupiah($retail->price) : '-' }}
                 </div>
                 <span class="text-xs text-slate-400 mt-1 block">Min. pembelian: {{ $retail->min_qty ?? 1 }} {{ $product->unit->name ?? 'Pcs' }}</span>
@@ -58,7 +58,7 @@
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="font-bold text-slate-900 text-sm">Struktur 3 Tingkat Harga</h3>
-                <a href="{{ route('products.prices', $product) }}" class="text-xs text-teal-700 hover:underline font-semibold">Atur Harga &rarr;</a>
+                <a href="{{ route('products.prices', $product) }}" class="text-xs text-[#881337] hover:underline font-semibold">Atur Harga &rarr;</a>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -78,7 +78,7 @@
         <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h3 class="font-bold text-sm text-slate-900">Mutasi Stok Terakhir</h3>
-                <a href="{{ route('inventory.card', $product) }}" class="text-xs text-teal-700 hover:underline font-semibold">Lihat Kartu Lengkap &rarr;</a>
+                <a href="{{ route('inventory.card', $product) }}" class="text-xs text-[#881337] hover:underline font-semibold">Lihat Kartu Lengkap &rarr;</a>
             </div>
 
             <div class="overflow-x-auto">

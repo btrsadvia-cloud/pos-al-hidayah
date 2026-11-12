@@ -1,5 +1,5 @@
-<x-app-layout>
-    <div class="space-y-6">
+﻿<x-app-layout>
+    <div class="space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Mutasi Inventori Stok</h1>
@@ -37,7 +37,7 @@
                     <label class="block font-medium text-slate-600 mb-1">Jenis Mutasi</label>
                     <div class="flex items-center space-x-1" x-data="{ type: '{{ request('type') }}' }">
                         <input type="hidden" name="type" :value="type">
-                        <button type="button" @click="type = ''" :class="type === '' ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-xs font-semibold transition cursor-pointer text-center">Semua</button>
+                        <button type="button" @click="type = ''" :class="type === '' ? 'bg-[#881337] text-white border-[#881337]' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-xs font-semibold transition cursor-pointer text-center">Semua</button>
                         <button type="button" @click="type = 'in'" :class="type === 'in' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-xs font-semibold transition cursor-pointer text-center">Masuk</button>
                         <button type="button" @click="type = 'out'" :class="type === 'out' ? 'bg-red-600 text-white border-red-600' : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'" class="flex-1 px-2 py-2 rounded-lg border text-xs font-semibold transition cursor-pointer text-center">Keluar</button>
                     </div>
@@ -57,7 +57,7 @@
 
                 <div class="sm:col-span-3 flex items-end space-x-2">
                     <button type="submit"
-                            class="flex-1 py-2 px-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition cursor-pointer min-h-[38px]">
+                            class="flex-1 py-2 px-3 bg-[#881337] hover:bg-[#70102e] text-white font-semibold rounded-xl transition cursor-pointer min-h-[38px]">
                         Terapkan Filter
                     </button>
                     @if(request()->hasAny(['product_id', 'type', 'date_from', 'date_to']))
@@ -90,7 +90,7 @@
                             <tr class="hover:bg-slate-50">
                                 <td class="py-3 px-4 font-mono text-slate-600 whitespace-nowrap">{{ $m->movement_date->format('d/m/Y') }}</td>
                                 <td class="py-3 px-4 font-bold text-slate-900">
-                                    <a href="{{ route('inventory.card', $m->product) }}" class="hover:text-teal-700 hover:underline">
+                                    <a href="{{ route('inventory.card', $m->product) }}" class="hover:text-[#881337] hover:underline">
                                         {{ $m->product->name ?? 'Produk dihapus' }}
                                     </a>
                                 </td>
