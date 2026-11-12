@@ -63,8 +63,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     // Admin-only routes
     Route::middleware('can:admin')->group(function () {
 
-        // Master data
-        Route::resource('categories', CategoryController::class)->except(['show']);
+        // Master data (Laman kategori dihapus sesuai permintaan, dialihkan ke katalog produk)
+        Route::redirect('/categories', '/products');
         Route::resource('units', UnitController::class)->except(['show']);
         Route::resource('products', ProductController::class);
         Route::post('/products/{product}/image', [ProductController::class, 'updateImage'])->name('products.image.update');

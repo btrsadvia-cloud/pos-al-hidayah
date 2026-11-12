@@ -165,6 +165,7 @@ class PosTerminal extends Component
 
         // Tier price is already computed for $product, no need for redundant DB queries
         $this->recalculatePaymentDefaults();
+        $this->dispatch('pos-cart-sound');
     }
 
     public function updateQuantity(int $productId, int $newQty)
@@ -207,6 +208,7 @@ class PosTerminal extends Component
     {
         if (isset($this->cart[$productId])) {
             $this->updateQuantity($productId, $this->cart[$productId]['quantity'] + 1);
+            $this->dispatch('pos-cart-sound');
         }
     }
 
@@ -434,6 +436,9 @@ class PosTerminal extends Component
             $this->showSuccessModal = true;
             $this->clearCart();
             $this->successMessage = "Transaksi {$sale->invoice_number} berhasil diselesaikan!";
+            if ($sale->payment_method === 'qris') {
+                $this->dispatch('qris-payment-success', amount: (int) $sale->grand_total);
+            }
         } catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
             $this->errorMessage = implode(' ', $errors);
@@ -613,6 +618,7 @@ class PosTerminal extends Component
             $this->showSuccessModal = true;
             $this->clearCart();
             $this->successMessage = "Pembayaran QRIS lunas! Transaksi {$sale->invoice_number} berhasil.";
+            $this->dispatch('qris-payment-success', amount: (int) $sale->grand_total);
         } catch (\Exception $e) {
             $this->errorMessage = 'Gagal menyimpan transaksi setelah pembayaran lunas: ' . $e->getMessage();
         }

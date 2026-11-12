@@ -16,8 +16,13 @@
                 </div>
 
                 <div class="flex items-center space-x-3 mb-3">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-[#4a0b1f] flex items-center justify-center font-black text-xl shadow-lg border border-amber-200/50 shrink-0">
-                        AH
+                    <!-- Boutique Store Illustration Badge (Replacing previous text-based AH) -->
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-[#4a0b1f] flex items-center justify-center shadow-lg border border-amber-200/60 shrink-0 transform hover:scale-105 transition-transform duration-200">
+                        <svg class="w-7 h-7 text-[#4a0b1f]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                            <circle cx="12" cy="7" r="1.5" fill="#4a0b1f"/>
+                        </svg>
                     </div>
                     <div>
                         <h1 class="text-2xl font-black tracking-tight text-white leading-tight">Toko Al-Hidayah</h1>
@@ -35,9 +40,9 @@
                 </div>
             </div>
 
-            <!-- Bottom Tagline -->
+            <!-- Bottom Tagline (Clean Version Without 'Edisi Maroon') -->
             <div class="relative z-10 pt-4 border-t border-rose-400/20 text-[11px] text-rose-200/90 flex items-center justify-between">
-                <span class="font-medium">Versi 1.3.0 &bull; Edisi Maroon</span>
+                <span class="font-medium">Versi 1.3.0</span>
                 <span class="font-semibold text-amber-200 flex items-center space-x-1">
                     <span>✦</span>
                     <span>Barokah &amp; Amanah</span>
@@ -46,8 +51,7 @@
         </div>
 
         <!-- Right Form Panel (7 cols) -->
-        <div class="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center"
-             x-data="{ showPassword: false }">
+        <div class="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center">
 
             <div class="max-w-md w-full mx-auto">
                 <!-- Heading -->
@@ -97,7 +101,7 @@
                         </div>
                     </div>
 
-                    <!-- Password Field -->
+                    <!-- Password Field with View/Hide Toggle -->
                     <div>
                         <label for="password" class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">
                             Kata Sandi
@@ -108,22 +112,21 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </div>
-                            <input :type="showPassword ? 'text' : 'password'" id="password" name="password" required
+                            <input type="password" id="password" name="password" required
                                    class="w-full pl-10 pr-12 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] outline-none text-sm text-slate-900 bg-slate-50/60 focus:bg-white transition"
                                    placeholder="••••••••">
-                            <button type="button" @click="showPassword = !showPassword"
-                                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition cursor-pointer">
-                                <template x-if="!showPassword">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                </template>
-                                <template x-if="showPassword">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                                    </svg>
-                                </template>
+                            <button type="button" onclick="togglePasswordVisibility()" id="btn-toggle-pw"
+                                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-[#881337] transition cursor-pointer"
+                                    title="Lihat / Sembunyikan Kata Sandi">
+                                <!-- Eye Icon (Show password) -->
+                                <svg id="eye-icon-show" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <!-- Eye Slash Icon (Hide password) -->
+                                <svg id="eye-icon-hide" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -150,4 +153,22 @@
         </div>
 
     </div>
+
+    <!-- Toggle Password Visibility Pure JavaScript (Guaranteed execution without framework dependencies) -->
+    <script>
+        function togglePasswordVisibility() {
+            var input = document.getElementById('password');
+            var eyeShow = document.getElementById('eye-icon-show');
+            var eyeHide = document.getElementById('eye-icon-hide');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeShow.classList.add('hidden');
+                eyeHide.classList.remove('hidden');
+            } else {
+                input.type = 'password';
+                eyeShow.classList.remove('hidden');
+                eyeHide.classList.add('hidden');
+            }
+        }
+    </script>
 </x-guest-layout>

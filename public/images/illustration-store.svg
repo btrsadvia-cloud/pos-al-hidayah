@@ -198,3 +198,4 @@
     <circle cx="260" cy="180" r="80" fill="#ec4899" opacity="0.08" filter="url(#softGlow)"/>
     <circle cx="150" cy="220" r="50" fill="#F59E0B" opacity="0.08" filter="url(#softGlow)"/>
 </svg>
+

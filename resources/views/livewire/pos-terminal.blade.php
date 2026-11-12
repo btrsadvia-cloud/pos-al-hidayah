@@ -154,7 +154,7 @@
                                         wire:key="product-card-{{ $product->id }}"
                                         wire:click="addToCart({{ $product->id }})"
                                         x-data="{ clicking: false }"
-                                        @click="clicking = true; setTimeout(() => clicking = false, 120)"
+                                        @click="window.playPosCartSound && window.playPosCartSound(); clicking = true; setTimeout(() => clicking = false, 120)"
                                         :class="{ 'scale-95 bg-teal-50 border-teal-500': clicking }"
                                         {{ $isOut ? 'disabled' : '' }}
                                         class="group p-2.5 rounded-xl border text-left transition-all duration-75 flex flex-col justify-between cursor-pointer min-h-[110px] select-none {{ $isOut ? 'opacity-50 bg-slate-50 border-slate-200 cursor-not-allowed' : 'bg-white hover:border-teal-500 hover:shadow-md border-slate-200' }}">
@@ -268,6 +268,7 @@
                                                class="w-14 text-center py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:bg-white focus:ring-1 focus:ring-teal-500">
                                         <!-- Plus Button -->
                                         <button type="button" wire:click="incrementQuantity({{ $productId }})"
+                                                @click="window.playPosCartSound && window.playPosCartSound()"
                                                 class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 font-bold flex items-center justify-center transition cursor-pointer select-none">
                                             &#43;
                                         </button>
@@ -511,27 +512,27 @@
                                         Uang Pas ({{ format_rupiah($total) }})
                                     </button>
                                 </div>
-                                <input type="number" min="0" step="1000"
+                                <input type="number" min="0" step="100"
                                        wire:model.live.debounce.250ms="paidAmount"
-                                       class="w-full py-3 px-3.5 bg-white border border-slate-300 rounded-xl font-mono text-base font-bold focus:ring-2 focus:ring-teal-500 outline-none">
+                                       class="w-full py-3 px-3.5 bg-white border border-slate-300 rounded-xl font-mono text-base font-bold focus:ring-2 focus:ring-[#881337] outline-none">
 
-                                <!-- Quick Cash Buttons -->
+                                <!-- Quick Cash Buttons (Rp 500 s/d Rp 5.000) -->
                                 <div class="grid grid-cols-4 gap-2">
-                                    <button type="button" wire:click="setQuickCash(50000)"
-                                            class="py-2 px-2 bg-white hover:bg-slate-200 border border-slate-200 rounded-lg font-semibold text-slate-700 text-xs transition cursor-pointer">
-                                        Rp 50.000
+                                    <button type="button" wire:click="setQuickCash(500)"
+                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
+                                        Rp 500
                                     </button>
-                                    <button type="button" wire:click="setQuickCash(100000)"
-                                            class="py-2 px-2 bg-white hover:bg-slate-200 border border-slate-200 rounded-lg font-semibold text-slate-700 text-xs transition cursor-pointer">
-                                        Rp 100.000
+                                    <button type="button" wire:click="setQuickCash(1000)"
+                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
+                                        Rp 1.000
                                     </button>
-                                    <button type="button" wire:click="setQuickCash(200000)"
-                                            class="py-2 px-2 bg-white hover:bg-slate-200 border border-slate-200 rounded-lg font-semibold text-slate-700 text-xs transition cursor-pointer">
-                                        Rp 200.000
+                                    <button type="button" wire:click="setQuickCash(2000)"
+                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
+                                        Rp 2.000
                                     </button>
-                                    <button type="button" wire:click="setQuickCash(500000)"
-                                            class="py-2 px-2 bg-white hover:bg-slate-200 border border-slate-200 rounded-lg font-semibold text-slate-700 text-xs transition cursor-pointer">
-                                        Rp 500.000
+                                    <button type="button" wire:click="setQuickCash(5000)"
+                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
+                                        Rp 5.000
                                     </button>
                                 </div>
 
@@ -751,7 +752,9 @@
 
     <!-- SUCCESS RECEIPT MODAL (DENGAN CETAK STRUK PASTI BISA) -->
     @if($showSuccessModal)
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto" x-cloak>
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-up"
+             x-cloak
+             x-init="if ('{{ $lastPaymentMethod }}' === 'qris') { setTimeout(() => window.playQrisSuccessSound && window.playQrisSuccessSound({{ (int) $lastTotal }}), 250); }">
             <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 my-8">
                 <div class="text-center mb-4">
                     <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -767,7 +770,7 @@
                 <div id="thermal-receipt" class="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-4 text-xs font-mono space-y-2 mb-4 text-slate-800">
                     <div class="text-center border-b border-dashed border-slate-300 pb-2">
                         <div class="font-bold text-sm">TOKO AL-HIDAYAH</div>
-                        <div class="text-[10px] text-slate-500">Busana Muslimah & Perlengkapan Ibadah</div>
+                        <div class="text-[10px] text-slate-500">Busana Muslimah &amp; Perlengkapan Ibadah</div>
                         <div class="text-[10px] text-slate-500 mt-1">{{ $lastSoldAt }}</div>
                         <div class="text-[10px] text-slate-500">Kasir: {{ auth()->user()->name }} | {{ $lastCustomerName }}</div>
                     </div>
@@ -802,15 +805,16 @@
                     </div>
 
                     <div class="text-center pt-2 border-t border-dashed border-slate-300 text-[10px] text-slate-500">
-                        Terima kasih atas kunjungan Anda.<br>Semoga berkah & bermanfaat!
+                        Terima kasih atas kunjungan Anda.<br>Semoga berkah &amp; bermanfaat!
                     </div>
                 </div>
 
                 <!-- Actions: Direct print & Open receipt tab -->
                 <div class="space-y-2">
                     <div class="grid grid-cols-2 gap-2">
-                        <button type="button" onclick="printReceiptDirectly({{ $lastSaleId }})"
-                                class="py-2.5 px-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center space-x-1.5 transition cursor-pointer min-h-[44px]">
+                        <button type="button"
+                                onclick="window.printReceiptDirectly ? window.printReceiptDirectly({{ $lastSaleId ?? 'null' }}) : window.print()"
+                                class="py-2.5 px-3 bg-[#881337] hover:bg-[#70102e] text-white font-semibold rounded-xl text-xs flex items-center justify-center space-x-1.5 shadow-md hover:shadow-lg transition cursor-pointer min-h-[44px] active:scale-95">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                             </svg>
@@ -823,42 +827,11 @@
                     </div>
                     <button type="button" wire:click="closeSuccessModal"
                             class="w-full py-2.5 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl text-xs transition cursor-pointer min-h-[44px]">
-                        Tutup & Transaksi Baru (Esc)
+                        Tutup &amp; Transaksi Baru (Esc)
                     </button>
                 </div>
             </div>
         </div>
-
-        <script>
-            window.printReceiptDirectly = function(saleId) {
-                if (!saleId) {
-                    window.print();
-                    return;
-                }
-                var url = '/sales/' + saleId + '/receipt';
-                var iframe = document.getElementById('receipt-print-iframe');
-                if (!iframe) {
-                    iframe = document.createElement('iframe');
-                    iframe.id = 'receipt-print-iframe';
-                    iframe.style.position = 'fixed';
-                    iframe.style.right = '0';
-                    iframe.style.bottom = '0';
-                    iframe.style.width = '0';
-                    iframe.style.height = '0';
-                    iframe.style.border = '0';
-                    document.body.appendChild(iframe);
-                }
-                iframe.src = url;
-                iframe.onload = function() {
-                    try {
-                        iframe.contentWindow.focus();
-                        iframe.contentWindow.print();
-                    } catch(e) {
-                        window.open(url, '_blank');
-                    }
-                };
-            };
-        </script>
     @endif
 
     <!-- KEYBOARD SHORTCUTS MODAL (?) -->
