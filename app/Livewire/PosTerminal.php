@@ -69,6 +69,8 @@ class PosTerminal extends Component
     // In-memory cache for fast POS interactions
     public array $cachedCategories = [];
     public array $cachedCustomers = [];
+    // Product cache: keyed by product_id for O(1) lookup in addToCart
+    public array $cachedProducts = [];
 
     public function mount()
     {
@@ -80,6 +82,26 @@ class PosTerminal extends Component
 
         $this->cachedCategories = \App\Models\Category::orderBy('name')->get()->toArray();
         $this->cachedCustomers = Customer::orderBy('name')->get()->toArray();
+
+        // Pre-load all active products with prices & unit into memory cache
+        // This eliminates per-click DB queries in addToCart() for near-instant response
+        $this->cachedProducts = Product::with(['prices', 'unit'])
+            ->whereNull('deleted_at')
+            ->get()
+            ->keyBy('id')
+            ->map(fn ($p) => [
+                'id'     => $p->id,
+                'name'   => $p->name,
+                'barcode'=> $p->barcode,
+                'stock'  => $p->stock,
+                'unit'   => $p->unit?->name ?? 'Pcs',
+                'prices' => $p->prices->map(fn ($pr) => [
+                    'min_qty' => $pr->min_qty,
+                    'price'   => (int) $pr->price,
+                    'tier'    => $pr->tier ?? 'ecer',
+                ])->sortByDesc('min_qty')->values()->toArray(),
+            ])
+            ->toArray();
     }
 
     public function performSearch()
@@ -128,44 +150,85 @@ class PosTerminal extends Component
     public function addToCart(int $productId)
     {
         $this->clearError();
-        $product = Product::with(['prices', 'unit'])->find($productId);
 
-        if (!$product) {
-            $this->errorMessage = 'Produk tidak ditemukan.';
-            return;
+        // Use in-memory cache first to avoid per-click DB queries (instant response)
+        $cached = $this->cachedProducts[$productId] ?? null;
+
+        if (!$cached) {
+            // Fallback: fetch from DB if not in cache (e.g. product added after page load)
+            $product = Product::with(['prices', 'unit'])->find($productId);
+            if (!$product) {
+                $this->errorMessage = 'Produk tidak ditemukan.';
+                return;
+            }
+            // Rebuild cache entry on the fly
+            $cached = [
+                'id'     => $product->id,
+                'name'   => $product->name,
+                'barcode'=> $product->barcode,
+                'stock'  => $product->stock,
+                'unit'   => $product->unit?->name ?? 'Pcs',
+                'prices' => $product->prices->map(fn ($pr) => [
+                    'min_qty' => $pr->min_qty,
+                    'price'   => (int) $pr->price,
+                    'tier'    => $pr->tier ?? 'ecer',
+                ])->sortByDesc('min_qty')->values()->toArray(),
+            ];
+            $this->cachedProducts[$productId] = $cached;
         }
 
-        if ($product->stock <= 0) {
-            $this->errorMessage = "Stok produk '{$product->name}' habis.";
+        // Read live stock from DB only when needed (stock changes frequently)
+        $liveStock = Product::where('id', $productId)->value('stock') ?? 0;
+
+        if ($liveStock <= 0) {
+            $this->errorMessage = "Stok produk '{$cached['name']}' habis.";
+            // Update cache stock
+            $this->cachedProducts[$productId]['stock'] = 0;
             return;
         }
 
         $currentQty = isset($this->cart[$productId]) ? $this->cart[$productId]['quantity'] : 0;
         $newQty = $currentQty + 1;
 
-        if ($newQty > $product->stock) {
-            $this->errorMessage = "Stok '{$product->name}' tidak mencukupi (sisa stok: {$product->stock}).";
+        if ($newQty > $liveStock) {
+            $this->errorMessage = "Stok '{$cached['name']}' tidak mencukupi (sisa stok: {$liveStock}).";
             return;
         }
 
-        $priceInfo = $product->getPriceForQty($newQty);
+        // Compute tier price from cached price tiers
+        $priceInfo = $this->getPriceFromCache($cached, $newQty);
 
         $this->cart[$productId] = [
-            'product_id'    => $product->id,
-            'name'          => $product->name,
-            'barcode'       => $product->barcode,
-            'unit'          => $product->unit->name ?? 'Pcs',
-            'price'         => (int) $priceInfo['price'],
+            'product_id'    => $cached['id'],
+            'name'          => $cached['name'],
+            'barcode'       => $cached['barcode'],
+            'unit'          => $cached['unit'],
+            'price'         => $priceInfo['price'],
             'tier'          => $priceInfo['tier'],
             'quantity'      => $newQty,
-            'max_stock'     => (int) $product->stock,
+            'max_stock'     => $liveStock,
             'item_discount' => isset($this->cart[$productId]) ? $this->cart[$productId]['item_discount'] : 0,
-            'subtotal'      => ((int) $priceInfo['price'] * $newQty) - (isset($this->cart[$productId]) ? $this->cart[$productId]['item_discount'] : 0),
+            'subtotal'      => ($priceInfo['price'] * $newQty) - (isset($this->cart[$productId]) ? $this->cart[$productId]['item_discount'] : 0),
         ];
 
-        // Tier price is already computed for $product, no need for redundant DB queries
         $this->recalculatePaymentDefaults();
         $this->dispatch('pos-cart-sound');
+    }
+
+    /**
+     * Get price info from cached price tiers (avoids DB query).
+     */
+    private function getPriceFromCache(array $cached, int $qty): array
+    {
+        // Prices are sorted descending by min_qty, pick first that fits
+        foreach ($cached['prices'] as $tier) {
+            if ($qty >= $tier['min_qty']) {
+                return ['price' => $tier['price'], 'tier' => $tier['tier']];
+            }
+        }
+        // Fallback to last (smallest min_qty) or default
+        $last = end($cached['prices']);
+        return $last ? ['price' => $last['price'], 'tier' => $last['tier']] : ['price' => 0, 'tier' => 'ecer'];
     }
 
     public function updateQuantity(int $productId, int $newQty)
@@ -180,21 +243,30 @@ class PosTerminal extends Component
             return;
         }
 
-        $product = Product::with(['prices'])->find($productId);
-        if (!$product) {
-            $this->removeFromCart($productId);
-            return;
-        }
+        // Use cache for price info, only query stock from DB
+        $cached = $this->cachedProducts[$productId] ?? null;
+        $liveStock = Product::where('id', $productId)->value('stock') ?? 0;
 
-        if ($newQty > $product->stock) {
-            $this->errorMessage = "Stok '{$product->name}' tidak mencukupi (sisa stok: {$product->stock}, diminta: {$newQty}).";
-            $this->cart[$productId]['quantity'] = $product->stock;
-            $newQty = $product->stock;
+        if (!$cached) {
+            // Fallback: full DB query if not cached
+            $product = Product::with(['prices'])->find($productId);
+            if (!$product) {
+                $this->removeFromCart($productId);
+                return;
+            }
+            $liveStock = $product->stock;
+            $priceInfo = $product->getPriceForQty($newQty);
         } else {
-            $this->cart[$productId]['quantity'] = $newQty;
+            $priceInfo = $this->getPriceFromCache($cached, $newQty);
         }
 
-        $priceInfo = $product->getPriceForQty($newQty);
+        if ($newQty > $liveStock) {
+            $name = $cached['name'] ?? $this->cart[$productId]['name'];
+            $this->errorMessage = "Stok '{$name}' tidak mencukupi (sisa stok: {$liveStock}, diminta: {$newQty}).";
+            $newQty = $liveStock;
+        }
+
+        $this->cart[$productId]['quantity'] = $newQty;
         $this->cart[$productId]['price'] = (int) $priceInfo['price'];
         $this->cart[$productId]['tier'] = $priceInfo['tier'];
 

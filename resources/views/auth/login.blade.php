@@ -170,5 +170,77 @@
                 eyeHide.classList.add('hidden');
             }
         }
+
+        // Login success slideshow overlay
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function () {
+                    var overlay = document.getElementById('login-success-overlay');
+                    if (overlay) {
+                        overlay.style.display = 'flex';
+                        // Trigger entrance animation
+                        setTimeout(function () {
+                            overlay.classList.add('overlay-visible');
+                        }, 10);
+                    }
+                });
+            }
+        });
     </script>
+
+    <!-- Login Success Slideshow Overlay -->
+    <div id="login-success-overlay"
+         style="display:none; position:fixed; inset:0; z-index:9999; background: linear-gradient(135deg, #2c0411 0%, #70102e 50%, #881337 100%); flex-direction:column; align-items:center; justify-content:center; gap:20px; opacity:0; transition: opacity 0.4s ease;"
+         class="">
+        <!-- Animated rings -->
+        <div style="position:absolute; inset:0; overflow:hidden; pointer-events:none;">
+            <div style="position:absolute; top:50%; left:50%; width:600px; height:600px; border:2px solid rgba(255,255,255,0.08); border-radius:50%; transform:translate(-50%,-50%); animation: ringPulse 2s ease-out infinite;"></div>
+            <div style="position:absolute; top:50%; left:50%; width:450px; height:450px; border:2px solid rgba(251,191,36,0.15); border-radius:50%; transform:translate(-50%,-50%); animation: ringPulse 2s ease-out 0.3s infinite;"></div>
+            <div style="position:absolute; top:50%; left:50%; width:300px; height:300px; border:2px solid rgba(255,255,255,0.1); border-radius:50%; transform:translate(-50%,-50%); animation: ringPulse 2s ease-out 0.6s infinite;"></div>
+        </div>
+
+        <!-- Store icon badge -->
+        <div style="width:80px; height:80px; border-radius:24px; background:linear-gradient(135deg,#fbbf24,#f59e0b); display:flex; align-items:center; justify-content:center; box-shadow:0 0 40px rgba(251,191,36,0.4); animation: iconBounce 0.6s ease 0.2s both;">
+            <svg style="width:44px;height:44px;color:#4a0b1f;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+        </div>
+
+        <!-- Welcome text -->
+        <div style="text-align:center; color:white; animation: textSlideUp 0.5s ease 0.4s both;">
+            <div style="font-size:13px; font-weight:600; color:rgba(251,191,36,0.9); letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Toko Al-Hidayah</div>
+            <div style="font-size:28px; font-weight:900; letter-spacing:-0.5px; margin-bottom:4px;">Selamat Datang! 👋</div>
+            <div style="font-size:14px; color:rgba(255,255,255,0.7);">Memuat sistem kasir...</div>
+        </div>
+
+        <!-- Bouncing dots loader -->
+        <div style="display:flex; gap:8px; animation: textSlideUp 0.5s ease 0.6s both;">
+            <div style="width:10px;height:10px;background:white;border-radius:50%;animation:dotBounce 1s ease 0s infinite;"></div>
+            <div style="width:10px;height:10px;background:rgba(251,191,36,0.9);border-radius:50%;animation:dotBounce 1s ease 0.15s infinite;"></div>
+            <div style="width:10px;height:10px;background:white;border-radius:50%;animation:dotBounce 1s ease 0.3s infinite;"></div>
+        </div>
+    </div>
+
+    <style>
+        .overlay-visible { opacity: 1 !important; }
+        @keyframes ringPulse {
+            0%   { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%,-50%) scale(1.3); }
+        }
+        @keyframes iconBounce {
+            0%   { opacity: 0; transform: scale(0.4) rotate(-15deg); }
+            70%  { transform: scale(1.1) rotate(5deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        @keyframes textSlideUp {
+            0%   { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes dotBounce {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-10px); }
+        }
+    </style>
 </x-guest-layout>
