@@ -36,8 +36,11 @@
                                 <img :src="preview" class="w-16 h-16 rounded-xl object-cover border-2 border-[#881337] shadow-sm shrink-0">
                             </template>
                             <template x-if="!preview">
-                                @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" class="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-xs shrink-0">
+                                @if($product->image_url ?? $product->image)
+                                    <img src="{{ $product->image_url ?? asset('storage/' . $product->image) }}"
+                                         onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';"
+                                         class="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-xs shrink-0">
+                                    <div style="display:none;" class="w-16 h-16 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-semibold shrink-0">Tanpa Foto</div>
                                 @else
                                     <div class="w-16 h-16 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-semibold shrink-0">Tanpa Foto</div>
                                 @endif

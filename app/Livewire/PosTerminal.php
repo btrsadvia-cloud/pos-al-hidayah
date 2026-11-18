@@ -93,7 +93,7 @@ class PosTerminal extends Component
                 'id'     => $p->id,
                 'name'   => $p->name,
                 'barcode'=> $p->barcode,
-                'image'  => $p->image,
+                'image'  => $p->image_url,
                 'stock'  => $p->stock,
                 'unit'   => $p->unit?->name ?? 'Pcs',
                 'prices' => $p->prices->map(fn ($pr) => [
@@ -167,7 +167,7 @@ class PosTerminal extends Component
                 'id'     => $product->id,
                 'name'   => $product->name,
                 'barcode'=> $product->barcode,
-                'image'  => $product->image,
+                'image'  => $product->image_url,
                 'stock'  => $product->stock,
                 'unit'   => $product->unit?->name ?? 'Pcs',
                 'prices' => $product->prices->map(fn ($pr) => [

@@ -92,10 +92,15 @@
                                 <td class="py-3 px-4">
                                     <div class="flex items-center space-x-3">
                                         <div class="relative group shrink-0 cursor-pointer"
-                                             @click="openImageModal({{ $p->id }}, '{{ addslashes($p->name) }}', '{{ $p->image ? asset('storage/' . $p->image) : '' }}')"
+                                             @click="openImageModal({{ $p->id }}, '{{ addslashes($p->name) }}', '{{ addslashes($p->image_url ?? '') }}')"
                                              title="Klik untuk ganti foto produk ini">
-                                            @if($p->image)
-                                                <img src="{{ asset('storage/' . $p->image) }}" alt="{{ $p->name }}" class="w-12 h-12 rounded-xl object-cover border border-slate-200">
+                                            @if($p->image_url)
+                                                <img src="{{ $p->image_url }}" alt="{{ $p->name }}"
+                                                     onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';"
+                                                     class="w-12 h-12 rounded-xl object-cover border border-slate-200">
+                                                <div style="display:none;" class="w-12 h-12 rounded-xl bg-rose-50 text-[#881337] font-bold flex items-center justify-center border border-rose-100 text-sm">
+                                                    {{ substr($p->name, 0, 2) }}
+                                                </div>
                                             @else
                                                 <div class="w-12 h-12 rounded-xl bg-rose-50 text-[#881337] font-bold flex items-center justify-center border border-rose-100 text-sm">
                                                     {{ substr($p->name, 0, 2) }}

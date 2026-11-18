@@ -73,7 +73,7 @@ class ProductController extends Controller
         return DB::transaction(function () use ($request, $data) {
             $imagePath = null;
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('products', 'public');
+                $imagePath = self::processUploadedImageToDataUri($request->file('image'));
             }
 
             $product = Product::create([
@@ -151,10 +151,10 @@ class ProductController extends Controller
         return DB::transaction(function () use ($request, $data, $product) {
             $imagePath = $product->image;
             if ($request->hasFile('image')) {
-                if ($product->image) {
+                if ($product->image && !str_starts_with($product->image, 'data:')) {
                     Storage::disk('public')->delete($product->image);
                 }
-                $imagePath = $request->file('image')->store('products', 'public');
+                $imagePath = self::processUploadedImageToDataUri($request->file('image'));
             }
 
             $product->update([
@@ -230,14 +230,76 @@ class ProductController extends Controller
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
         ]);
 
-        if ($product->image) {
+        if ($product->image && !str_starts_with($product->image, 'data:')) {
             Storage::disk('public')->delete($product->image);
         }
 
-        $path = $request->file('image')->store('products', 'public');
-        $product->update(['image' => $path]);
+        $dataUri = self::processUploadedImageToDataUri($request->file('image'));
+        $product->update(['image' => $dataUri]);
 
         return back()->with('success', "Foto untuk produk '{$product->name}' berhasil diperbarui!");
+    }
+
+    /**
+     * Convert uploaded image to an optimized Base64 Data URI
+     * Resizes large images to max 500x500 WebP to keep database lightweight (~15-40KB)
+     * Compatible with serverless environments (Vercel) without external S3/storage buckets
+     */
+    public static function processUploadedImageToDataUri($file): string
+    {
+        $mime = $file->getMimeType() ?: 'image/jpeg';
+        $filePath = $file->getRealPath();
+
+        if (extension_loaded('gd') && function_exists('imagecreatefromstring')) {
+            $raw = file_get_contents($filePath);
+            $src = @imagecreatefromstring($raw);
+            if ($src) {
+                $origWidth = imagesx($src);
+                $origHeight = imagesy($src);
+                $maxDim = 500;
+
+                if ($origWidth > $maxDim || $origHeight > $maxDim) {
+                    if ($origWidth >= $origHeight) {
+                        $newWidth = $maxDim;
+                        $newHeight = (int) round(($origHeight / $origWidth) * $maxDim);
+                    } else {
+                        $newHeight = $maxDim;
+                        $newWidth = (int) round(($origWidth / $origHeight) * $maxDim);
+                    }
+                } else {
+                    $newWidth = $origWidth;
+                    $newHeight = $origHeight;
+                }
+
+                $dst = imagecreatetruecolor($newWidth, $newHeight);
+                imagealphablending($dst, false);
+                imagesavealpha($dst, true);
+                $transparent = imagecolorallocatealpha($dst, 255, 255, 255, 127);
+                imagefilledrectangle($dst, 0, 0, $newWidth, $newHeight, $transparent);
+
+                imagecopyresampled($dst, $src, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+
+                ob_start();
+                if (function_exists('imagewebp')) {
+                    imagewebp($dst, null, 80);
+                    $encodedData = ob_get_clean();
+                    $finalMime = 'image/webp';
+                } else {
+                    imagejpeg($dst, null, 82);
+                    $encodedData = ob_get_clean();
+                    $finalMime = 'image/jpeg';
+                }
+                imagedestroy($src);
+                imagedestroy($dst);
+
+                if ($encodedData) {
+                    return 'data:' . $finalMime . ';base64,' . base64_encode($encodedData);
+                }
+            }
+        }
+
+        $binary = file_get_contents($filePath);
+        return 'data:' . $mime . ';base64,' . base64_encode($binary);
     }
 
     public function destroy(Product $product)
