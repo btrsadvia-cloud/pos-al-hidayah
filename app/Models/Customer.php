@@ -16,7 +16,27 @@ class Customer extends Model
         'gender',
         'phone',
         'address',
+        'is_member',
+        'member_discount_percent',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_member' => 'boolean',
+            'member_discount_percent' => 'integer',
+        ];
+    }
+
+    public function isMember(): bool
+    {
+        return (bool) $this->is_member;
+    }
+
+    public function getDiscountPercent(): int
+    {
+        return $this->isMember() ? ($this->member_discount_percent ?: 10) : 0;
+    }
 
     public function sales(): HasMany
     {

@@ -111,12 +111,16 @@ class PosService
 
             $totalAllDiscounts = $totalItemDiscount + $invoiceDiscount;
 
-            // Enforce cashier maximum discount limit
+            // Enforce cashier maximum discount limit (accommodates member discount + cashier manual allowance)
             if ($user->isCashier()) {
-                $maxAllowedDiscount = (int) floor(($rawSubtotal * $maxCashierDiscountPct) / 100);
+                $customer = !empty($data['customer_id']) ? \App\Models\Customer::find($data['customer_id']) : null;
+                $memberDiscountPct = ($customer && $customer->isMember()) ? $customer->getDiscountPercent() : 0;
+                $effectiveMaxPct = $maxCashierDiscountPct + $memberDiscountPct;
+
+                $maxAllowedDiscount = (int) ceil(($rawSubtotal * $effectiveMaxPct) / 100);
                 if ($totalAllDiscounts > $maxAllowedDiscount) {
                     throw ValidationException::withMessages([
-                        'discount' => "Kasir dibatasi maksimal diskon {$maxCashierDiscountPct}% (" . format_rupiah($maxAllowedDiscount) . "). Total diskon saat ini: " . format_rupiah($totalAllDiscounts) . ". Hubungi admin untuk diskon lebih besar.",
+                        'discount' => "Kasir dibatasi maksimal diskon {$effectiveMaxPct}% (" . format_rupiah($maxAllowedDiscount) . "). Total diskon saat ini: " . format_rupiah($totalAllDiscounts) . ". Hubungi admin untuk diskon lebih besar.",
                     ]);
                 }
             }

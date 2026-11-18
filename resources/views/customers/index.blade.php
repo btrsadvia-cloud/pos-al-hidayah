@@ -28,6 +28,7 @@
                             <th class="py-3 px-4">Jenis Kelamin</th>
                             <th class="py-3 px-4">No. Telepon / WhatsApp</th>
                             <th class="py-3 px-4">Alamat</th>
+                            <th class="py-3 px-4 text-center">Status Member</th>
                             <th class="py-3 px-4 text-center">Total Transaksi</th>
                             <th class="py-3 px-4 text-right">Aksi</th>
                         </tr>
@@ -41,6 +42,17 @@
                                 </td>
                                 <td class="py-3 px-4 text-slate-700 font-mono">{{ $c->phone ?: '-' }}</td>
                                 <td class="py-3 px-4 text-slate-600 max-w-xs truncate">{{ $c->address ?: '-' }}</td>
+                                <td class="py-3 px-4 text-center">
+                                    @if($c->isMember())
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                            ⭐ Member ({{ $c->getDiscountPercent() }}%)
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600">
+                                            Pelanggan Biasa
+                                        </span>
+                                    @endif
+                                </td>
                                 <td class="py-3 px-4 text-center">
                                     <span class="px-2 py-0.5 bg-rose-50 text-[#881337] rounded-full font-bold">
                                         {{ $c->sales()->count() }}

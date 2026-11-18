@@ -27,6 +27,8 @@ class PosTerminal extends Component
     // Transaction parameters
     public ?int $customerId = null;
     public int $invoiceDiscount = 0;
+    public int $memberDiscount = 0;
+    public int $memberDiscountPercent = 0;
     public string $paymentMethod = 'cash'; // 'cash', 'qris', 'transfer'
     public int $paidAmount = 0;
     public ?string $paymentReference = '';
@@ -341,6 +343,8 @@ class PosTerminal extends Component
     {
         $this->cart = [];
         $this->invoiceDiscount = 0;
+        $this->memberDiscount = 0;
+        $this->memberDiscountPercent = 0;
         $this->paidAmount = 0;
         $this->paymentReference = '';
         $this->note = '';
@@ -378,7 +382,7 @@ class PosTerminal extends Component
         foreach ($this->cart as $item) {
             $itemDiscounts += ($item['item_discount'] ?? 0);
         }
-        return $itemDiscounts + max(0, (int) $this->invoiceDiscount);
+        return $itemDiscounts + $this->memberDiscount + max(0, (int) $this->invoiceDiscount);
     }
 
     public function calculateTotal(): int
@@ -418,8 +422,52 @@ class PosTerminal extends Component
         }
     }
 
+    public function updatedCustomerId($value)
+    {
+        $this->clearError();
+        $this->recalculatePaymentDefaults();
+    }
+
+    public function isMemberSelected(): bool
+    {
+        if (!$this->customerId) {
+            return false;
+        }
+        $customer = collect($this->cachedCustomers)->firstWhere('id', $this->customerId);
+        if (!$customer) {
+            $c = Customer::find($this->customerId);
+            $customer = $c ? $c->toArray() : null;
+        }
+        return $customer ? (bool) ($customer['is_member'] ?? true) : false;
+    }
+
+    public function recalculateMemberDiscount(): void
+    {
+        if (!$this->customerId) {
+            $this->memberDiscount = 0;
+            $this->memberDiscountPercent = 0;
+            return;
+        }
+
+        $customer = collect($this->cachedCustomers)->firstWhere('id', $this->customerId);
+        if (!$customer) {
+            $c = Customer::find($this->customerId);
+            $customer = $c ? $c->toArray() : null;
+        }
+
+        if ($customer && ($customer['is_member'] ?? true)) {
+            $this->memberDiscountPercent = (int) ($customer['member_discount_percent'] ?? 10);
+            $subtotal = $this->calculateSubtotal();
+            $this->memberDiscount = (int) round($subtotal * ($this->memberDiscountPercent / 100));
+        } else {
+            $this->memberDiscount = 0;
+            $this->memberDiscountPercent = 0;
+        }
+    }
+
     public function recalculatePaymentDefaults()
     {
+        $this->recalculateMemberDiscount();
         $total = $this->calculateTotal();
         if ($this->paymentMethod !== 'cash') {
             $this->paidAmount = $total;
@@ -475,14 +523,19 @@ class PosTerminal extends Component
             ];
         }
 
+        $note = $this->note ?: '';
+        if ($this->memberDiscount > 0) {
+            $note = trim($note . " [Diskon Member {$this->memberDiscountPercent}%: " . format_rupiah($this->memberDiscount) . "]");
+        }
+
         $payload = [
             'items'             => $items,
             'customer_id'       => $this->customerId ?: null,
-            'discount'          => $this->invoiceDiscount,
+            'discount'          => $this->invoiceDiscount + $this->memberDiscount,
             'payment_method'    => $this->paymentMethod,
             'paid_amount'       => $this->paymentMethod === 'cash' ? $this->paidAmount : $total,
             'payment_reference' => $this->paymentReference,
-            'note'              => $this->note,
+            'note'              => $note ?: null,
         ];
 
         try {
@@ -647,14 +700,16 @@ class PosTerminal extends Component
             ];
         }
 
+        $note = trim(($this->note ?: '') . ($this->memberDiscount > 0 ? " [Diskon Member {$this->memberDiscountPercent}%: " . format_rupiah($this->memberDiscount) . "]" : '') . ' [BuatQris: ' . $this->qrisTransactionId . ']');
+
         $payload = [
             'items'             => $items,
             'customer_id'       => $this->customerId ?: null,
-            'discount'          => $this->invoiceDiscount,
+            'discount'          => $this->invoiceDiscount + $this->memberDiscount,
             'payment_method'    => 'qris',
             'paid_amount'       => $totalToPay,
             'payment_reference' => $this->qrisTransactionId,
-            'note'              => trim(($this->note ?: '') . ' [BuatQris: ' . $this->qrisTransactionId . ']'),
+            'note'              => $note,
         ];
 
         try {
@@ -801,8 +856,11 @@ class PosTerminal extends Component
             'qrisAmountUniq'     => $this->qrisAmountUniq,
             'qrisStatus'         => $this->qrisStatus,
             'qrisStatusMessage'  => $this->qrisStatusMessage,
-            'subtotal'           => $this->calculateSubtotal(),
-            'totalDiscount'      => $this->calculateTotalDiscount(),
+            'subtotal'              => $this->calculateSubtotal(),
+            'memberDiscount'        => $this->memberDiscount,
+            'memberDiscountPercent' => $this->memberDiscountPercent,
+            'isMemberSelected'      => $this->isMemberSelected(),
+            'totalDiscount'         => $this->calculateTotalDiscount(),
             'total'              => $this->calculateTotal(),
             'change'             => $this->calculateChange(),
         ]);

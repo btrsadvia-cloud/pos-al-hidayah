@@ -54,7 +54,7 @@
         </div>
         <div class="flex">
             <span>Kasir: {{ $sale->user->name ?? 'Kasir' }}</span>
-            <span>Pel: {{ $sale->customer->name ?? 'Umum' }}</span>
+            <span>Pel: {{ $sale->customer ? $sale->customer->name . ($sale->customer->isMember() ? ' (Member)' : '') : 'Umum' }}</span>
         </div>
     </div>
 
@@ -80,7 +80,7 @@
         </div>
         @if($sale->discount > 0)
             <div class="flex">
-                <span>Diskon:</span>
+                <span>Diskon{{ $sale->customer && $sale->customer->isMember() ? ' (Member)' : '' }}:</span>
                 <span>-{{ number_format($sale->discount, 0, ',', '.') }}</span>
             </div>
         @endif

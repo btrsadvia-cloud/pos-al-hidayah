@@ -26,11 +26,16 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'    => ['required', 'string', 'max:100'],
-            'gender'  => ['nullable', 'in:L,P'],
-            'phone'   => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string'],
+            'name'                    => ['required', 'string', 'max:100'],
+            'gender'                  => ['nullable', 'in:L,P'],
+            'phone'                   => ['nullable', 'string', 'max:20'],
+            'address'                 => ['nullable', 'string'],
+            'is_member'               => ['nullable', 'boolean'],
+            'member_discount_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
         ]);
+
+        $data['is_member'] = $request->boolean('is_member', true);
+        $data['member_discount_percent'] = $data['member_discount_percent'] ?? 10;
 
         Customer::create($data);
         return redirect()->route('customers.index')->with('success', 'Pelanggan berhasil ditambahkan.');
@@ -44,11 +49,16 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $data = $request->validate([
-            'name'    => ['required', 'string', 'max:100'],
-            'gender'  => ['nullable', 'in:L,P'],
-            'phone'   => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string'],
+            'name'                    => ['required', 'string', 'max:100'],
+            'gender'                  => ['nullable', 'in:L,P'],
+            'phone'                   => ['nullable', 'string', 'max:20'],
+            'address'                 => ['nullable', 'string'],
+            'is_member'               => ['nullable', 'boolean'],
+            'member_discount_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
         ]);
+
+        $data['is_member'] = $request->boolean('is_member');
+        $data['member_discount_percent'] = $data['member_discount_percent'] ?? 10;
 
         $customer->update($data);
         return redirect()->route('customers.index')->with('success', 'Pelanggan berhasil diperbarui.');

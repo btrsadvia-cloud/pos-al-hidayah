@@ -81,7 +81,14 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
                 <span class="text-xs text-slate-400 font-medium">Pelanggan</span>
-                <div class="font-bold text-slate-900 text-sm mt-0.5">{{ $sale->customer->name ?? 'Pembeli Umum' }}</div>
+                <div class="font-bold text-slate-900 text-sm mt-0.5 flex items-center space-x-1.5">
+                    <span>{{ $sale->customer->name ?? 'Pembeli Umum' }}</span>
+                    @if($sale->customer && $sale->customer->isMember())
+                        <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            ⭐ Member ({{ $sale->customer->getDiscountPercent() }}%)
+                        </span>
+                    @endif
+                </div>
                 <div class="text-[11px] text-slate-500">{{ $sale->customer->phone ?? '-' }}</div>
             </div>
 

@@ -358,7 +358,19 @@
                             <span>Subtotal Kotor</span>
                             <span class="font-medium">{{ format_rupiah($subtotal) }}</span>
                         </div>
-                        @if($totalDiscount > 0)
+                        @if($memberDiscount > 0)
+                            <div class="flex justify-between text-emerald-700 font-semibold">
+                                <span>⭐ Diskon Member ({{ $memberDiscountPercent }}%)</span>
+                                <span>-{{ format_rupiah($memberDiscount) }}</span>
+                            </div>
+                        @endif
+                        @if($invoiceDiscount > 0)
+                            <div class="flex justify-between text-slate-600">
+                                <span>Diskon Faktur</span>
+                                <span class="font-medium text-red-600">-{{ format_rupiah($invoiceDiscount) }}</span>
+                            </div>
+                        @endif
+                        @if($totalDiscount > 0 && $memberDiscount == 0 && $invoiceDiscount == 0)
                             <div class="flex justify-between text-slate-600">
                                 <span>Total Diskon</span>
                                 <span class="font-medium text-red-600">-{{ format_rupiah($totalDiscount) }}</span>
@@ -458,10 +470,24 @@
                             <span>Subtotal Kotor</span>
                             <span class="font-medium">{{ format_rupiah($subtotal) }}</span>
                         </div>
-                        <div class="flex justify-between text-slate-600">
-                            <span>Total Diskon</span>
-                            <span class="font-medium text-red-600">-{{ format_rupiah($totalDiscount) }}</span>
-                        </div>
+                        @if($memberDiscount > 0)
+                            <div class="flex justify-between text-emerald-700 font-semibold">
+                                <span>⭐ Diskon Member ({{ $memberDiscountPercent }}%)</span>
+                                <span>-{{ format_rupiah($memberDiscount) }}</span>
+                            </div>
+                        @endif
+                        @if($invoiceDiscount > 0)
+                            <div class="flex justify-between text-slate-600">
+                                <span>Diskon Faktur</span>
+                                <span class="font-medium text-red-600">-{{ format_rupiah($invoiceDiscount) }}</span>
+                            </div>
+                        @endif
+                        @if($totalDiscount > 0 && $memberDiscount == 0 && $invoiceDiscount == 0)
+                            <div class="flex justify-between text-slate-600">
+                                <span>Total Diskon</span>
+                                <span class="font-medium text-red-600">-{{ format_rupiah($totalDiscount) }}</span>
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Grand Total Banner -->
@@ -531,7 +557,14 @@
                                             <button type="button" @click="select(c)"
                                                     class="w-full text-left px-3 py-2 hover:bg-rose-50 hover:text-[#70102e] transition flex justify-between items-center cursor-pointer">
                                                 <div>
-                                                    <span class="font-bold text-slate-800 text-xs" x-text="c.name"></span>
+                                                    <div class="flex items-center space-x-1.5">
+                                                        <span class="font-bold text-slate-800 text-xs" x-text="c.name"></span>
+                                                        <template x-if="c.is_member === undefined || c.is_member || c.is_member == 1">
+                                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                                ⭐ Member (10%)
+                                                            </span>
+                                                        </template>
+                                                    </div>
                                                     <span class="text-[10px] text-slate-400 block" x-show="c.phone" x-text="'HP: ' + c.phone"></span>
                                                 </div>
                                                 <span class="text-[#881337] font-bold ml-2 shrink-0" x-show="selectedId == c.id">✓ Terpilih</span>
@@ -539,6 +572,17 @@
                                         </template>
                                     </div>
                                 </div>
+
+                                <!-- Member Discount Notice -->
+                                @if($isMemberSelected)
+                                    <div class="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-800">
+                                        <div class="flex items-center space-x-1.5 font-semibold">
+                                            <span class="text-emerald-600 font-bold">⭐</span>
+                                            <span>Member Aktif (Diskon {{ $memberDiscountPercent }}%)</span>
+                                        </div>
+                                        <span class="font-bold text-emerald-900">-{{ format_rupiah($memberDiscount) }}</span>
+                                    </div>
+                                @endif
                             </div>
 
                             <div>

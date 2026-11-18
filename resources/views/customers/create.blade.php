@@ -41,6 +41,26 @@
                               class="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] outline-none text-sm text-slate-900">{{ old('address') }}</textarea>
                 </div>
 
+                <div class="p-4 bg-emerald-50/60 border border-emerald-200 rounded-2xl" x-data="{ isMember: true }">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="block text-sm font-bold text-emerald-900">Status Member Toko Al-Hidayah</span>
+                            <span class="text-xs text-emerald-700">Member otomatis berhak mendapatkan diskon 10% di kasir.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="is_member" value="1" x-model="isMember" class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                    </div>
+                    <div x-show="isMember" class="mt-3 pt-3 border-t border-emerald-200/60 flex items-center justify-between">
+                        <label for="member_discount_percent" class="text-xs font-semibold text-emerald-900">Persentase Diskon Member (%)</label>
+                        <div class="flex items-center space-x-1 w-24">
+                            <input type="number" id="member_discount_percent" name="member_discount_percent" value="{{ old('member_discount_percent', 10) }}" min="1" max="100" class="w-full px-2.5 py-1.5 text-center font-bold text-sm bg-white rounded-lg border border-emerald-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <span class="text-xs font-bold text-emerald-800">%</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="flex items-center space-x-3 pt-3">
                     <button type="submit"
                             class="px-5 py-2.5 bg-[#881337] hover:bg-[#70102e] active:bg-[#5c0d26] text-white font-semibold rounded-xl text-sm shadow-xs transition cursor-pointer min-h-[44px]">
