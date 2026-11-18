@@ -59,9 +59,26 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA', file_exists(base_path('database/certs/cacert.pem')) ? base_path('database/certs/cacert.pem') : (file_exists('/etc/pki/tls/certs/ca-bundle.crt') ? '/etc/pki/tls/certs/ca-bundle.crt' : (file_exists('/etc/ssl/certs/ca-certificates.crt') ? '/etc/ssl/certs/ca-certificates.crt' : null))),
-            ]) : [],
+            'options' => extension_loaded('pdo_mysql') ? (function () {
+                $candidates = array_filter([
+                    env('MYSQL_ATTR_SSL_CA'),
+                    env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null,
+                    '/etc/pki/tls/certs/ca-bundle.crt',
+                    '/etc/ssl/certs/ca-certificates.crt',
+                    base_path('database/certs/cacert.pem'),
+                    storage_path('cacert.pem'),
+                ]);
+                $caPath = null;
+                foreach ($candidates as $candidate) {
+                    if (is_string($candidate) && file_exists($candidate)) {
+                        $caPath = $candidate;
+                        break;
+                    }
+                }
+                return array_filter([
+                    Mysql::ATTR_SSL_CA => $caPath,
+                ]);
+            })() : [],
         ],
 
         'mariadb' => [
@@ -79,9 +96,26 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA', file_exists(base_path('database/certs/cacert.pem')) ? base_path('database/certs/cacert.pem') : (file_exists('/etc/pki/tls/certs/ca-bundle.crt') ? '/etc/pki/tls/certs/ca-bundle.crt' : (file_exists('/etc/ssl/certs/ca-certificates.crt') ? '/etc/ssl/certs/ca-certificates.crt' : null))),
-            ]) : [],
+            'options' => extension_loaded('pdo_mysql') ? (function () {
+                $candidates = array_filter([
+                    env('MYSQL_ATTR_SSL_CA'),
+                    env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null,
+                    '/etc/pki/tls/certs/ca-bundle.crt',
+                    '/etc/ssl/certs/ca-certificates.crt',
+                    base_path('database/certs/cacert.pem'),
+                    storage_path('cacert.pem'),
+                ]);
+                $caPath = null;
+                foreach ($candidates as $candidate) {
+                    if (is_string($candidate) && file_exists($candidate)) {
+                        $caPath = $candidate;
+                        break;
+                    }
+                }
+                return array_filter([
+                    Mysql::ATTR_SSL_CA => $caPath,
+                ]);
+            })() : [],
         ],
 
         'pgsql' => [
