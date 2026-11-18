@@ -22,10 +22,6 @@ class Product extends Model
         'min_stock',
     ];
 
-    protected $appends = [
-        'image_url',
-    ];
-
     public function getImageUrlAttribute(): ?string
     {
         if (empty($this->image)) {

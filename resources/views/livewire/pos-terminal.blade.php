@@ -270,20 +270,8 @@
                                 <div class="flex items-start justify-between gap-2.5">
                                     <div class="flex items-start space-x-2.5 flex-1 min-w-0">
                                         <!-- Thumbnail in Cart -->
-                                        <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 mt-0.5">
-                                            @if(!empty($item['image']))
-                                                <img src="{{ str_starts_with($item['image'], 'data:') || str_starts_with($item['image'], 'http') ? $item['image'] : asset('storage/' . $item['image']) }}"
-                                                     alt="{{ $item['name'] }}"
-                                                     onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';"
-                                                     class="w-full h-full object-cover">
-                                                <div style="display:none;" class="w-full h-full flex items-center justify-center text-[#881337] text-[10px] font-bold bg-rose-50">
-                                                    {{ substr($item['name'], 0, 2) }}
-                                                </div>
-                                            @else
-                                                <div class="w-full h-full flex items-center justify-center text-[#881337] text-[10px] font-bold bg-rose-50">
-                                                    {{ substr($item['name'], 0, 2) }}
-                                                </div>
-                                            @endif
+                                        <div class="w-10 h-10 rounded-lg overflow-hidden bg-rose-50 border border-rose-100 shrink-0 mt-0.5 flex items-center justify-center text-[#881337] text-[11px] font-bold">
+                                            {{ substr($item['name'], 0, 2) }}
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <h5 class="text-xs font-semibold text-slate-900 leading-tight truncate">
@@ -435,20 +423,8 @@
                         @foreach($cart as $item)
                             <div class="py-2 flex justify-between items-start gap-2">
                                 <div class="flex items-center space-x-2.5 min-w-0">
-                                    <div class="w-8 h-8 rounded-lg overflow-hidden bg-white border border-slate-200 shrink-0">
-                                        @if(!empty($item['image']))
-                                            <img src="{{ str_starts_with($item['image'], 'data:') || str_starts_with($item['image'], 'http') ? $item['image'] : asset('storage/' . $item['image']) }}"
-                                                 alt="{{ $item['name'] }}"
-                                                 onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';"
-                                                 class="w-full h-full object-cover">
-                                            <div style="display:none;" class="w-full h-full flex items-center justify-center text-[#881337] text-[9px] font-bold bg-rose-50">
-                                                {{ substr($item['name'], 0, 2) }}
-                                            </div>
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center text-[#881337] text-[9px] font-bold bg-rose-50">
-                                                {{ substr($item['name'], 0, 2) }}
-                                            </div>
-                                        @endif
+                                    <div class="w-8 h-8 rounded-lg overflow-hidden bg-rose-50 border border-rose-100 shrink-0 flex items-center justify-center text-[#881337] text-[10px] font-bold">
+                                        {{ substr($item['name'], 0, 2) }}
                                     </div>
                                     <div class="min-w-0">
                                         <div class="font-semibold text-slate-900 truncate">{{ $item['name'] }}</div>

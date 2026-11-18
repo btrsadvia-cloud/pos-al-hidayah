@@ -59,6 +59,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            'timezone' => '+07:00',
             'options' => extension_loaded('pdo_mysql') ? (function () {
                 $host = env('DB_HOST', '127.0.0.1');
                 $explicitCa = env('MYSQL_ATTR_SSL_CA');
@@ -105,6 +106,7 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            'timezone' => '+07:00',
             'options' => extension_loaded('pdo_mysql') ? (function () {
                 $host = env('DB_HOST', '127.0.0.1');
                 $explicitCa = env('MYSQL_ATTR_SSL_CA');

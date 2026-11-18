@@ -95,7 +95,6 @@ class PosTerminal extends Component
                 'id'     => $p->id,
                 'name'   => $p->name,
                 'barcode'=> $p->barcode,
-                'image'  => $p->image_url,
                 'stock'  => $p->stock,
                 'unit'   => $p->unit?->name ?? 'Pcs',
                 'prices' => $p->prices->map(fn ($pr) => [
@@ -169,7 +168,6 @@ class PosTerminal extends Component
                 'id'     => $product->id,
                 'name'   => $product->name,
                 'barcode'=> $product->barcode,
-                'image'  => $product->image_url,
                 'stock'  => $product->stock,
                 'unit'   => $product->unit?->name ?? 'Pcs',
                 'prices' => $product->prices->map(fn ($pr) => [
@@ -206,7 +204,6 @@ class PosTerminal extends Component
             'product_id'    => $cached['id'],
             'name'          => $cached['name'],
             'barcode'       => $cached['barcode'],
-            'image'         => $cached['image'] ?? null,
             'unit'          => $cached['unit'],
             'price'         => $priceInfo['price'],
             'tier'          => $priceInfo['tier'],
@@ -548,7 +545,7 @@ class PosTerminal extends Component
             $this->lastPaidAmount = $sale->paid_amount;
             $this->lastChangeAmount = $sale->change_amount;
             $this->lastPaymentMethod = $sale->payment_method;
-            $this->lastSoldAt = $sale->sold_at ? $sale->sold_at->format('d/m/Y H:i') : now()->format('d/m/Y H:i');
+            $this->lastSoldAt = $sale->sold_at ? $sale->sold_at->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB' : now()->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB';
             $this->lastCustomerName = $sale->customer->name ?? 'Pelanggan Umum';
 
             $sale->load('items');
@@ -732,7 +729,7 @@ class PosTerminal extends Component
             $this->lastPaidAmount = $sale->paid_amount;
             $this->lastChangeAmount = $sale->change_amount;
             $this->lastPaymentMethod = 'qris';
-            $this->lastSoldAt = $sale->sold_at ? $sale->sold_at->format('d/m/Y H:i') : now()->format('d/m/Y H:i');
+            $this->lastSoldAt = $sale->sold_at ? $sale->sold_at->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB' : now()->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB';
             $this->lastCustomerName = $sale->customer->name ?? 'Pelanggan Umum';
 
             $sale->load('items');

@@ -50,7 +50,7 @@
     <div class="border-b" style="font-size: 10px;">
         <div class="flex">
             <span>No: {{ $sale->invoice_number }}</span>
-            <span>{{ $sale->sold_at ? $sale->sold_at->format('d/m/y H:i') : '-' }}</span>
+            <span>{{ $sale->sold_at ? $sale->sold_at->timezone('Asia/Jakarta')->format('d/m/Y H:i') . ' WIB' : '-' }}</span>
         </div>
         <div class="flex">
             <span>Kasir: {{ $sale->user->name ?? 'Kasir' }}</span>

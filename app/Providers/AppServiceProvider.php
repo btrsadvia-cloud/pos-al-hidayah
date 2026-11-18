@@ -22,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Enforce Asia/Jakarta (WIB) timezone across all PHP date/time operations
+        date_default_timezone_set(config('app.timezone', 'Asia/Jakarta'));
+
         // Enforce HTTPS for assets, routes, and redirects in production / Vercel
         if (config('app.env') === 'production' || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
