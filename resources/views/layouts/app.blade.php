@@ -46,7 +46,7 @@
                 </button>
                 <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 group">
                     <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-[#4a0b1f] flex items-center justify-center shadow-md border border-amber-200/50 group-hover:scale-105 transition-transform duration-200 shrink-0">
-                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="w-6 h-6" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 24px; height: 24px;">
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                             <polyline points="9 22 9 12 15 12 15 22"/>
                             <circle cx="12" cy="7" r="1.5" fill="#4a0b1f"/>
