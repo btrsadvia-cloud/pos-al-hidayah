@@ -22,6 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Enforce HTTPS for assets, routes, and redirects in production / Vercel
+        if (config('app.env') === 'production' || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Currency formatting Blade directive
         Blade::directive('currency', function ($expression) {
             return "<?php echo format_rupiah($expression); ?>";

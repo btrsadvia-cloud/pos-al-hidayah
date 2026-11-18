@@ -14,6 +14,9 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust all proxies (required for Vercel edge reverse proxy)
+        $middleware->trustProxies(at: '*');
+
         // Session lifetime via config
         $middleware->web(append: [
             \Illuminate\Session\Middleware\AuthenticateSession::class,
