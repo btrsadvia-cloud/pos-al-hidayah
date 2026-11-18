@@ -60,9 +60,18 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? (function () {
+                $host = env('DB_HOST', '127.0.0.1');
+                $explicitCa = env('MYSQL_ATTR_SSL_CA');
+                $isLocal = in_array(strtolower($host), ['127.0.0.1', 'localhost', '::1']);
+
+                // If local host and no explicit SSL CA requested, do not enforce SSL
+                if ($isLocal && empty($explicitCa)) {
+                    return [];
+                }
+
                 $candidates = array_filter([
-                    env('MYSQL_ATTR_SSL_CA'),
-                    env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null,
+                    $explicitCa,
+                    $explicitCa ? base_path($explicitCa) : null,
                     '/etc/pki/tls/certs/ca-bundle.crt',
                     '/etc/ssl/certs/ca-certificates.crt',
                     base_path('database/certs/cacert.pem'),
@@ -97,9 +106,18 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? (function () {
+                $host = env('DB_HOST', '127.0.0.1');
+                $explicitCa = env('MYSQL_ATTR_SSL_CA');
+                $isLocal = in_array(strtolower($host), ['127.0.0.1', 'localhost', '::1']);
+
+                // If local host and no explicit SSL CA requested, do not enforce SSL
+                if ($isLocal && empty($explicitCa)) {
+                    return [];
+                }
+
                 $candidates = array_filter([
-                    env('MYSQL_ATTR_SSL_CA'),
-                    env('MYSQL_ATTR_SSL_CA') ? base_path(env('MYSQL_ATTR_SSL_CA')) : null,
+                    $explicitCa,
+                    $explicitCa ? base_path($explicitCa) : null,
                     '/etc/pki/tls/certs/ca-bundle.crt',
                     '/etc/ssl/certs/ca-certificates.crt',
                     base_path('database/certs/cacert.pem'),
