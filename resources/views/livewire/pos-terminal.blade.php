@@ -270,8 +270,15 @@
                                 <div class="flex items-start justify-between gap-2.5">
                                     <div class="flex items-start space-x-2.5 flex-1 min-w-0">
                                         <!-- Thumbnail in Cart -->
-                                        <div class="w-10 h-10 rounded-lg overflow-hidden bg-rose-50 border border-rose-100 shrink-0 mt-0.5 flex items-center justify-center text-[#881337] text-[11px] font-bold">
-                                            {{ substr($item['name'], 0, 2) }}
+                                        @php
+                                            $cartImg = $productImages[$productId] ?? null;
+                                        @endphp
+                                        <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 mt-0.5 flex items-center justify-center text-[#881337] text-[11px] font-bold">
+                                            @if($cartImg)
+                                                <img src="{{ $cartImg }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
+                                            @else
+                                                {{ substr($item['name'], 0, 2) }}
+                                            @endif
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <h5 class="text-xs font-semibold text-slate-900 leading-tight truncate">
@@ -402,9 +409,6 @@
                         <p class="text-xs text-slate-500">Periksa rincian belanja dan selesaikan transaksi kasir</p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <span class="text-xs font-semibold px-2.5 py-1 bg-rose-100 text-[#70102e] rounded-full">Langkah 2: Pembayaran</span>
-                </div>
             </div>
 
             <!-- Main Payment View: 2 Columns (Order Summary Left, Payment Form Right) -->
@@ -421,10 +425,17 @@
 
                     <div class="flex-1 overflow-y-auto divide-y divide-slate-200 pr-1 text-xs max-h-80">
                         @foreach($cart as $item)
+                            @php
+                                $payImg = $productImages[$item['product_id']] ?? null;
+                            @endphp
                             <div class="py-2 flex justify-between items-start gap-2">
                                 <div class="flex items-center space-x-2.5 min-w-0">
-                                    <div class="w-8 h-8 rounded-lg overflow-hidden bg-rose-50 border border-rose-100 shrink-0 flex items-center justify-center text-[#881337] text-[10px] font-bold">
-                                        {{ substr($item['name'], 0, 2) }}
+                                    <div class="w-8 h-8 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center text-[#881337] text-[10px] font-bold">
+                                        @if($payImg)
+                                            <img src="{{ $payImg }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
+                                        @else
+                                            {{ substr($item['name'], 0, 2) }}
+                                        @endif
                                     </div>
                                     <div class="min-w-0">
                                         <div class="font-semibold text-slate-900 truncate">{{ $item['name'] }}</div>

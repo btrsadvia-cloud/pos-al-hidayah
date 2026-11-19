@@ -181,8 +181,8 @@ class PosTerminal extends Component
             $this->cachedProducts[$productId] = $cached;
         }
 
-        // Read live stock from DB only when needed (stock changes frequently)
-        $liveStock = Product::where('id', $productId)->value('stock') ?? 0;
+        // Read live stock from cache first for zero-latency local response
+        $liveStock = $cached['stock'] ?? (Product::where('id', $productId)->value('stock') ?? 0);
 
         if ($liveStock <= 0) {
             $this->errorMessage = "Stok produk '{$cached['name']}' habis.";
@@ -247,9 +247,9 @@ class PosTerminal extends Component
             return;
         }
 
-        // Use cache for price info, only query stock from DB
+        // Use cache for price info and stock for instant response
         $cached = $this->cachedProducts[$productId] ?? null;
-        $liveStock = Product::where('id', $productId)->value('stock') ?? 0;
+        $liveStock = $cached['stock'] ?? (Product::where('id', $productId)->value('stock') ?? 0);
 
         if (!$cached) {
             // Fallback: full DB query if not cached
@@ -573,6 +573,7 @@ class PosTerminal extends Component
 
             $this->showSuccessModal = true;
             $this->clearCart();
+            \Illuminate\Support\Facades\Cache::flush();
             $this->successMessage = "Transaksi {$sale->invoice_number} berhasil diselesaikan!";
             if ($sale->payment_method === 'qris') {
                 $this->dispatch('qris-payment-success', amount: (int) $sale->grand_total);
@@ -759,6 +760,7 @@ class PosTerminal extends Component
 
             $this->showSuccessModal = true;
             $this->clearCart();
+            \Illuminate\Support\Facades\Cache::flush();
             $this->successMessage = "Pembayaran QRIS lunas! Transaksi {$sale->invoice_number} berhasil.";
             $this->dispatch('qris-payment-success', amount: (int) $sale->grand_total);
         } catch (\Exception $e) {
@@ -814,30 +816,44 @@ class PosTerminal extends Component
 
     public function render()
     {
-        $productQuery = Product::with(['prices', 'unit'])
-            ->whereNull('deleted_at');
+        $catId = $this->selectedCategoryId;
+        $searchStr = trim($this->search);
 
-        if ($this->selectedCategoryId) {
-            $productQuery->where('category_id', $this->selectedCategoryId);
+        $query = Product::with(['prices', 'unit'])->whereNull('deleted_at');
+
+        if ($catId) {
+            $query->where('category_id', $catId);
         }
 
-        if (trim($this->search) !== '') {
-            $s = trim($this->search);
-            $productQuery->where(function ($q) use ($s) {
-                $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('barcode', 'like', "%{$s}%")
-                  ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$s}%"));
+        if ($searchStr !== '') {
+            $query->where(function ($q) use ($searchStr) {
+                $q->where('name', 'like', "%{$searchStr}%")
+                  ->orWhere('barcode', 'like', "%{$searchStr}%")
+                  ->orWhereHas('category', fn($cq) => $cq->where('name', 'like', "%{$searchStr}%"));
             });
         }
 
-        $products = $productQuery->orderBy('name')->limit(36)->get();
-        $categories = !empty($this->cachedCategories) ? $this->cachedCategories : \App\Models\Category::orderBy('name')->get()->toArray();
-        $customers = !empty($this->cachedCustomers) ? $this->cachedCustomers : Customer::orderBy('name')->get()->toArray();
+        $products = $query->orderBy('name')->limit(36)->get();
+
+        $categories = !empty($this->cachedCategories)
+            ? $this->cachedCategories
+            : \App\Models\Category::orderBy('name')->get()->toArray();
+
+        $customers = !empty($this->cachedCustomers)
+            ? $this->cachedCustomers
+            : Customer::orderBy('name')->get()->toArray();
+
+        $productImages = \Illuminate\Support\Facades\Cache::remember('pos_product_images', 300, function() {
+            return Product::whereNull('deleted_at')->get(['id', 'image'])->mapWithKeys(function($p) {
+                return [$p->id => $p->image_url];
+            })->toArray();
+        });
 
         return view('livewire.pos-terminal', [
             'products'           => $products,
             'categories'         => $categories,
             'customers'          => $customers,
+            'productImages'      => $productImages,
             'search'             => $this->search,
             'selectedCategoryId' => $this->selectedCategoryId,
             'showPaymentStep'    => $this->showPaymentStep,
