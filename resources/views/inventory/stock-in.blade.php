@@ -203,7 +203,7 @@
                     <div>
                         <label for="unit_cost" class="block text-sm font-semibold text-slate-800 mb-1">Harga Beli / Satuan (HPP) <span class="text-red-500">*</span></label>
                         <input type="number" id="unit_cost" name="unit_cost" value="{{ old('unit_cost') }}" required min="0" step="1"
-                               placeholder="Contoh: 95000"
+                               placeholder="Contoh: 95"
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] font-mono text-sm text-slate-900 outline-none">
                     </div>
                 </div>

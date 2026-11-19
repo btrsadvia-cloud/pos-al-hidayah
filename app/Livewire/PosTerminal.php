@@ -38,6 +38,8 @@ class PosTerminal extends Component
     public bool $showSuccessModal = false;
     public ?int $lastSaleId = null;
     public ?string $lastInvoiceNumber = null;
+    public int $lastSubtotal = 0;
+    public int $lastDiscount = 0;
     public int $lastChangeAmount = 0;
     public int $lastTotal = 0;
     public int $lastPaidAmount = 0;
@@ -421,7 +423,17 @@ class PosTerminal extends Component
 
     public function updatedCustomerId($value)
     {
+        $this->customerId = $value ? (int) $value : null;
         $this->clearError();
+        $this->recalculateMemberDiscount();
+        $this->recalculatePaymentDefaults();
+    }
+
+    public function selectCustomer(?int $id): void
+    {
+        $this->customerId = $id ? (int) $id : null;
+        $this->clearError();
+        $this->recalculateMemberDiscount();
         $this->recalculatePaymentDefaults();
     }
 
@@ -435,7 +447,7 @@ class PosTerminal extends Component
             $c = Customer::find($this->customerId);
             $customer = $c ? $c->toArray() : null;
         }
-        return $customer ? (bool) ($customer['is_member'] ?? true) : false;
+        return $customer ? (!empty($customer['is_member']) && $customer['is_member'] != 0) : false;
     }
 
     public function recalculateMemberDiscount(): void
@@ -452,7 +464,7 @@ class PosTerminal extends Component
             $customer = $c ? $c->toArray() : null;
         }
 
-        if ($customer && ($customer['is_member'] ?? true)) {
+        if ($customer && (!empty($customer['is_member']) && $customer['is_member'] != 0)) {
             $this->memberDiscountPercent = (int) ($customer['member_discount_percent'] ?? 10);
             $subtotal = $this->calculateSubtotal();
             $this->memberDiscount = (int) round($subtotal * ($this->memberDiscountPercent / 100));
@@ -466,11 +478,7 @@ class PosTerminal extends Component
     {
         $this->recalculateMemberDiscount();
         $total = $this->calculateTotal();
-        if ($this->paymentMethod !== 'cash') {
-            $this->paidAmount = $total;
-        } elseif ($this->paidAmount < $total) {
-            $this->paidAmount = $total;
-        }
+        $this->paidAmount = $total;
     }
 
     public function updatedPaymentMethod($value)
@@ -495,6 +503,9 @@ class PosTerminal extends Component
             $this->errorMessage = 'Keranjang belanja masih kosong.';
             return;
         }
+
+        // Always ensure member discount is calculated freshly before checkout
+        $this->recalculateMemberDiscount();
 
         // If paying via QRIS and BuatQris is configured, initiate dynamic QRIS flow
         if ($this->paymentMethod === 'qris') {
@@ -541,6 +552,8 @@ class PosTerminal extends Component
             // Prepare receipt data
             $this->lastSaleId = $sale->id;
             $this->lastInvoiceNumber = $sale->invoice_number;
+            $this->lastSubtotal = $sale->subtotal;
+            $this->lastDiscount = $sale->discount;
             $this->lastTotal = $sale->total;
             $this->lastPaidAmount = $sale->paid_amount;
             $this->lastChangeAmount = $sale->change_amount;
@@ -725,6 +738,8 @@ class PosTerminal extends Component
             // Prepare receipt data
             $this->lastSaleId = $sale->id;
             $this->lastInvoiceNumber = $sale->invoice_number;
+            $this->lastSubtotal = $sale->subtotal;
+            $this->lastDiscount = $sale->discount;
             $this->lastTotal = $sale->total;
             $this->lastPaidAmount = $sale->paid_amount;
             $this->lastChangeAmount = $sale->change_amount;

@@ -484,13 +484,21 @@
                                 <div x-data="{
                                     open: false,
                                     search: '',
-                                    selectedId: @entangle('customerId'),
+                                    selectedId: @entangle('customerId').live,
                                     customers: {{ json_encode($customers) }},
                                     init() {
                                         if (this.selectedId) {
                                             const found = this.customers.find(c => c.id == this.selectedId);
-                                            if (found) this.search = found.name;
+                                            if (found) this.search = found.name + (found.phone ? ' (' + found.phone + ')' : '');
                                         }
+                                        this.$watch('selectedId', (val) => {
+                                            if (!val) {
+                                                this.search = '';
+                                            } else {
+                                                const found = this.customers.find(c => c.id == val);
+                                                if (found) this.search = found.name + (found.phone ? ' (' + found.phone + ')' : '');
+                                            }
+                                        });
                                     },
                                     get filtered() {
                                         if (!this.search.trim()) return this.customers.slice(0, 15);
@@ -501,11 +509,13 @@
                                         this.selectedId = c.id;
                                         this.search = c.name + (c.phone ? ' (' + c.phone + ')' : '');
                                         this.open = false;
+                                        $wire.selectCustomer(c.id);
                                     },
                                     clear() {
                                         this.selectedId = null;
                                         this.search = '';
-                                        this.open = true;
+                                        this.open = false;
+                                        $wire.selectCustomer(null);
                                     }
                                 }" class="relative">
                                     <div class="relative">
@@ -606,23 +616,23 @@
                                        wire:model.live.debounce.250ms="paidAmount"
                                        class="w-full py-3 px-3.5 bg-white border border-slate-300 rounded-xl font-mono text-base font-bold focus:ring-2 focus:ring-[#881337] outline-none">
 
-                                <!-- Quick Cash Buttons (Rp 500 s/d Rp 5.000) -->
+                                <!-- Quick Cash Buttons (Rp 50 s/d Rp 500) -->
                                 <div class="grid grid-cols-4 gap-2">
+                                    <button type="button" wire:click="setQuickCash(50)"
+                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
+                                        Rp 50
+                                    </button>
+                                    <button type="button" wire:click="setQuickCash(100)"
+                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
+                                        Rp 100
+                                    </button>
+                                    <button type="button" wire:click="setQuickCash(200)"
+                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
+                                        Rp 200
+                                    </button>
                                     <button type="button" wire:click="setQuickCash(500)"
                                             class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
                                         Rp 500
-                                    </button>
-                                    <button type="button" wire:click="setQuickCash(1000)"
-                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
-                                        Rp 1.000
-                                    </button>
-                                    <button type="button" wire:click="setQuickCash(2000)"
-                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
-                                        Rp 2.000
-                                    </button>
-                                    <button type="button" wire:click="setQuickCash(5000)"
-                                            class="py-2.5 px-2 bg-white hover:bg-rose-50 hover:border-[#881337] border border-slate-200 rounded-xl font-bold text-slate-800 text-xs transition shadow-xs cursor-pointer active:scale-95">
-                                        Rp 5.000
                                     </button>
                                 </div>
 
@@ -878,7 +888,17 @@
                     </div>
 
                     <div class="space-y-1 text-right pt-1">
-                        <div class="flex justify-between font-bold text-sm">
+                        <div class="flex justify-between text-[11px] text-slate-600">
+                            <span>Subtotal:</span>
+                            <span>{{ format_rupiah($lastSubtotal) }}</span>
+                        </div>
+                        @if($lastDiscount > 0)
+                            <div class="flex justify-between text-[11px] text-emerald-700 font-semibold">
+                                <span>Diskon{{ $lastCustomerName && $lastCustomerName !== 'Pelanggan Umum' ? ' (Member)' : '' }}:</span>
+                                <span>-{{ format_rupiah($lastDiscount) }}</span>
+                            </div>
+                        @endif
+                        <div class="flex justify-between font-bold text-sm border-t border-dashed border-slate-300 pt-1">
                             <span>TOTAL:</span>
                             <span>{{ format_rupiah($lastTotal) }}</span>
                         </div>

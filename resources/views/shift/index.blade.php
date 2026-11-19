@@ -37,7 +37,7 @@
                             Hitung seluruh uang fisik (modal awal + penerimaan tunai hari ini) lalu masukkan nominalnya di bawah ini:
                         </p>
                         <input type="number" id="counted_cash" name="counted_cash" required min="0" step="1"
-                               placeholder="Contoh: 1500000"
+                               placeholder="Masukkan nominal kas di laci (Rp)"
                                class="w-full max-w-md px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] font-mono text-base font-bold text-slate-900 outline-none">
                     </div>
 
@@ -65,7 +65,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-slate-900 text-base">Belum Ada Shift yang Terbuka</h3>
-                        <p class="text-xs text-slate-500">Buka shift baru dan masukkan modal kas awal untuk mulai menggunakan layar kasir POS.</p>
+                        <p class="text-xs text-slate-500">Buka shift baru dan tentukan kas awal bebas sesuai uang pecahan di laci kasir.</p>
                     </div>
                 </div>
 
@@ -76,7 +76,7 @@
                             Kas Awal (Modal Uang Kembalian di Laci Kasir)
                         </label>
                         <input type="number" id="opening_cash" name="opening_cash" required min="0" step="1"
-                               placeholder="Contoh: 200000"
+                               placeholder="Masukkan nominal kas awal bebas (Rp)"
                                class="w-full max-w-md px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#881337] focus:border-[#881337] font-mono text-base font-bold text-slate-900 outline-none">
                     </div>
 

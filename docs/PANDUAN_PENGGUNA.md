@@ -44,7 +44,7 @@ Dokumen ini memandu kasir dan pemilik (administrator) dalam mengoperasikan aplik
 ### A. Membuka Shift Kasir
 Kasir **wajib** membuka shift sebelum dapat mengakses layar POS.
 1. Masuk ke menu **Manajemen Shift** (atau klik tautan peringatan pada layar POS).
-2. Pada formulir **Buka Shift Baru**, masukkan nominal **Kas Awal** (uang pecahan/modal kembalian di laci kasir, contoh: `200000`).
+2. Pada formulir **Buka Shift Baru**, masukkan nominal **Kas Awal** (uang pecahan/modal kembalian di laci kasir, bebas disesuaikan sendiri).
 3. Klik tombol **Buka Shift Baru**.
 4. Status shift Anda akan berubah menjadi **Shift Aktif** (indikator hijau).
 

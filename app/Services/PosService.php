@@ -109,11 +109,22 @@ class PosService
                 ];
             }
 
+            // Automatic member discount safeguard
+            $customer = !empty($data['customer_id']) ? \App\Models\Customer::find($data['customer_id']) : null;
+            $memberDiscount = 0;
+            if ($customer && $customer->isMember()) {
+                $memberDiscountPct = $customer->getDiscountPercent();
+                $memberDiscount = (int) round(($rawSubtotal * $memberDiscountPct) / 100);
+            }
+
+            if ($memberDiscount > 0 && $invoiceDiscount < $memberDiscount) {
+                $invoiceDiscount = $memberDiscount + $invoiceDiscount;
+            }
+
             $totalAllDiscounts = $totalItemDiscount + $invoiceDiscount;
 
             // Enforce cashier maximum discount limit (accommodates member discount + cashier manual allowance)
             if ($user->isCashier()) {
-                $customer = !empty($data['customer_id']) ? \App\Models\Customer::find($data['customer_id']) : null;
                 $memberDiscountPct = ($customer && $customer->isMember()) ? $customer->getDiscountPercent() : 0;
                 $effectiveMaxPct = $maxCashierDiscountPct + $memberDiscountPct;
 

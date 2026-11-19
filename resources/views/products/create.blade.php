@@ -124,7 +124,7 @@
                             <span class="inline-block px-2 py-0.5 bg-slate-200 text-slate-800 font-bold text-xs rounded mb-1">Tingkat 1: Eceran</span>
                             <label class="block text-xs font-semibold text-slate-700">Harga Satuan (Rp) <span class="text-red-500">*</span></label>
                             <input type="number" name="price_retail" value="{{ old('price_retail') }}" required min="0" step="1"
-                                   placeholder="Contoh: 150000"
+                                   placeholder="Contoh: 150"
                                    class="w-full mt-1 px-3 py-2 bg-white rounded-lg border border-slate-300 font-mono text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-[#881337]">
                         </div>
                         <div>
@@ -140,7 +140,7 @@
                             <span class="inline-block px-2 py-0.5 bg-rose-100 text-[#70102e] font-bold text-xs rounded mb-1">Tingkat 2: Grosir</span>
                             <label class="block text-xs font-semibold text-[#70102e]">Harga Grosir (Rp) <span class="text-red-500">*</span></label>
                             <input type="number" name="price_wholesale" value="{{ old('price_wholesale') }}" required min="0" step="1"
-                                   placeholder="Contoh: 135000"
+                                   placeholder="Contoh: 135"
                                    class="w-full mt-1 px-3 py-2 bg-white rounded-lg border border-rose-300 font-mono text-sm font-bold text-[#70102e] outline-none focus:ring-2 focus:ring-[#881337]">
                         </div>
                         <div>
@@ -156,7 +156,7 @@
                             <span class="inline-block px-2 py-0.5 bg-amber-100 text-amber-900 font-bold text-xs rounded mb-1">Tingkat 3: Super Grosir (Borongan)</span>
                             <label class="block text-xs font-semibold text-amber-900">Harga Super Grosir (Rp) <span class="text-red-500">*</span></label>
                             <input type="number" name="price_super_wholesale" value="{{ old('price_super_wholesale') }}" required min="0" step="1"
-                                   placeholder="Contoh: 120000"
+                                   placeholder="Contoh: 120"
                                    class="w-full mt-1 px-3 py-2 bg-white rounded-lg border border-amber-300 font-mono text-sm font-bold text-amber-900 outline-none focus:ring-2 focus:ring-[#881337]">
                         </div>
                         <div>
